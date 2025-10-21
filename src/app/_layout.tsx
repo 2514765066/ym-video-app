@@ -1,5 +1,5 @@
-import Icon from "@/components/icon";
 import "@/global.css";
+import Icon from "@/components/icon";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { Stack } from "expo-router";
 import { View, Text } from "react-native";
@@ -8,13 +8,21 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useNetworkState } from "expo-network";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
 
 export const unstable_settings = {
   anchor: "(tabs)",
 };
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
   const networkState = useNetworkState();
+
+  useEffect(() => {
+    SplashScreen.hideAsync();
+  }, []);
 
   if (networkState.isInternetReachable === false) {
     return <OffLineTip />;
