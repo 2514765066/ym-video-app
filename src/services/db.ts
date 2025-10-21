@@ -2,9 +2,9 @@ import { HistoryInfo } from "@/type";
 import { openDatabaseSync } from "expo-sqlite";
 import { minVersion, version } from "./version";
 
-export const db = openDatabaseSync("db.sqlite");
+export const db = openDatabaseSync(__DEV__ ? "test.sqlite" : "db.sqlite");
 
-const dbName = "test";
+const dbName = "history";
 
 db.execSync(
   `
