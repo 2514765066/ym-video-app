@@ -11,7 +11,7 @@ export default function TabLayout() {
       tabBar={props => <TabBar {...props} />}
     >
       <Tabs.Screen
-        name="movie"
+        name="index"
         options={{
           tabBarIcon: ({ focused }) =>
             focused ? (

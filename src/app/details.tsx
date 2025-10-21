@@ -22,7 +22,6 @@ import {
 import { Episode } from "@/type";
 import Icon from "@/components/icon";
 import useEpisode from "@/hooks/useEpisode";
-import { formatRemarks } from "@/utils/format";
 
 const { height } = Dimensions.get("window");
 
