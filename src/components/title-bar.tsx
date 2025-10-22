@@ -1,7 +1,13 @@
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { ReactNode } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleProp,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "./icon";
 
@@ -17,7 +23,8 @@ type Props = {
   rightComponent?: ReactNode;
 
   blur?: boolean;
-  bg?: boolean;
+
+  style?: StyleProp<ViewStyle>;
 };
 
 export default function ({
@@ -32,30 +39,31 @@ export default function ({
   rightComponent,
 
   blur = true,
-  bg = true,
 }: Props) {
   const { top } = useSafeAreaInsets();
 
   return (
     <BlurView
       tint="dark"
-      intensity={blur ? 50 : 0}
+      intensity={blur ? 100 : 0}
       experimentalBlurMethod="dimezisBlurView"
-      className="w-screen flex-row flex-center absolute top-0 left-0 z-10"
-      style={{
-        paddingTop: top,
-        height: 44 + top,
-        backgroundColor: bg ? "rgba(25,25,25,0.5)" : "transparent",
-      }}
+      className={`w-screen flex-row flex-center absolute top-0 left-0 z-10 `}
+      style={[
+        {
+          paddingTop: top,
+          height: 44 + top,
+          backgroundColor: blur ? "rgba(255,255,255,0.05)" : "transparent",
+        },
+      ]}
     >
       {leftShow && (
-        <View className="h-full flex-row flex-center absolute left-4 bottom-0">
+        <View className="h-full flex-row flex-center aspect-square">
           {leftComponent}
         </View>
       )}
 
       {titleShow && (
-        <View className="h-full flex-row flex-center">
+        <View className="h-full flex-row flex-center flex-1">
           {titleComponent ? (
             titleComponent
           ) : (
@@ -65,7 +73,7 @@ export default function ({
       )}
 
       {rightShow && (
-        <View className="h-full flex-row flex-center absolute right-4 bottom-0">
+        <View className="h-full flex-row flex-center aspect-square">
           {rightComponent}
         </View>
       )}

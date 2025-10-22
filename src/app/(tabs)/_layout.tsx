@@ -13,24 +13,48 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ focused }) =>
-            focused ? (
-              <Icon name="filmFill" size={30} />
-            ) : (
-              <Icon name="film" size={30} />
-            ),
+          tabBarLabel: "影视",
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              name="film"
+              size={32}
+              color={
+                focused ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)"
+              }
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="search"
+        options={{
+          tabBarLabel: "搜索",
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              name="search"
+              size={32}
+              color={
+                focused ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)"
+              }
+            />
+          ),
         }}
       />
 
       <Tabs.Screen
         name="history"
         options={{
-          tabBarIcon: ({ focused }) =>
-            focused ? (
-              <Icon name="historyFill" size={24} />
-            ) : (
-              <Icon name="history" size={24} />
-            ),
+          tabBarLabel: "历史",
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              name="history"
+              size={28}
+              color={
+                focused ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)"
+              }
+            />
+          ),
         }}
       />
     </Tabs>

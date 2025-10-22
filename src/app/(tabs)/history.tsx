@@ -53,7 +53,7 @@ export default function () {
     <SafeAreaView className="flex-1 bg-bg">
       <TitleBar blur={!isTop} title="历史记录" />
 
-      <SearchBar closed={14} />
+      {/* <SearchBar closed={14} /> */}
 
       <Content onScroll={onScroll} />
 

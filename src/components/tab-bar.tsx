@@ -1,70 +1,91 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { PropsWithChildren } from "react";
-import { TouchableHighlight, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
+import { View, Text, Pressable } from "react-native";
 
 export default function TabBar({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) {
-  const { bottom } = useSafeAreaInsets();
-
   return (
-    <View
-      className="bg-bg"
-      style={{
-        paddingBottom: bottom,
-      }}
-    >
-      <View className="h-16 py-1 flex-row justify-around items-center">
-        {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
-          const Icon = options.tabBarIcon;
-          const isFocused = state.index === index;
+    <View className="w-screen flex-center absolute left-0 bottom-2">
+      <View
+        className="rounded-full overflow-hidden"
+        style={{
+          boxShadow: [
+            {
+              offsetX: 0,
+              offsetY: 2,
+              blurRadius: 8,
+              spreadDistance: 1,
+              color: "rgba(0,0,0,0.4)",
+            },
+          ],
+        }}
+      >
+        <BlurView
+          intensity={100}
+          tint="dark"
+          experimentalBlurMethod="dimezisBlurView"
+          className="p-1.5 flex-row"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.1)",
+          }}
+        >
+          {state.routes.map((route, index) => {
+            const { options } = descriptors[route.key];
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: "tabPress",
-              target: route.key,
-              canPreventDefault: true,
-            });
+            //图标
+            const icon = options.tabBarIcon!;
 
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          };
+            //标题
+            const label = options.tabBarLabel as string;
 
-          return (
-            <Item key={index} onPress={onPress}>
-              <View>
-                {Icon &&
-                  Icon({
-                    focused: isFocused,
-                    color: "",
-                    size: 24,
-                  })}
-              </View>
-            </Item>
-          );
-        })}
+            const isFocused = state.index === index;
+
+            const onPress = () => {
+              const event = navigation.emit({
+                type: "tabPress",
+                target: route.key,
+                canPreventDefault: true,
+              });
+
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            };
+
+            return (
+              <Pressable
+                key={index}
+                className="flex-row flex-center gap-1 rounded-full"
+                style={{
+                  width: 98,
+                  height: 44,
+                  backgroundColor: isFocused
+                    ? "rgba(255,255,255,0.05)"
+                    : "transparent",
+                }}
+                onPress={onPress}
+              >
+                {icon({
+                  focused: isFocused,
+                  color: "",
+                  size: 24,
+                })}
+
+                {isFocused && (
+                  <Text
+                    className={`${isFocused ? "text-main" : " text-main-dark2"}`}
+                  >
+                    {label}
+                  </Text>
+                )}
+              </Pressable>
+            );
+          })}
+        </BlurView>
       </View>
     </View>
-  );
-}
-
-type Props = {
-  onPress: () => void;
-};
-
-function Item({ children, onPress }: PropsWithChildren<Props>) {
-  return (
-    <TouchableHighlight
-      className="h-full flex-center rounded-full aspect-square"
-      underlayColor="#2D2D2D"
-      onPress={onPress}
-    >
-      {children}
-    </TouchableHighlight>
   );
 }

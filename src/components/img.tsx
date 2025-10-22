@@ -9,11 +9,11 @@ type Props = {
 
 export default function ({ src, className, style }: Props) {
   return (
-    <View className={className} style={style}>
+    <View className={`${className}`} style={style}>
       <Image
-        contentPosition="left"
         style={{ flex: 1 }}
         source={src}
+        placeholderContentFit="cover"
         placeholder={require("@/assets/images/default.png")}
       />
     </View>

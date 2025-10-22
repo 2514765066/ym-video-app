@@ -19,7 +19,6 @@ import {
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -37,8 +36,6 @@ export default function () {
   return (
     <SafeAreaView className="flex-1 bg-bg">
       <TitleBar blur={!isTop} titleComponent={<Title />} />
-
-      <SearchBar closed={14} />
 
       <Content onScroll={onScroll} />
     </SafeAreaView>
@@ -59,7 +56,7 @@ function Title() {
   return (
     <View className="flex-row items-center gap-4">
       {categories.map((item, index) => (
-        <Item
+        <CategoryItem
           key={item.id}
           label={item.label}
           active={index == selectedCategory}
@@ -89,7 +86,7 @@ function Header() {
     <View>
       <Banner />
 
-      <ScrollView
+      {/* <ScrollView
         horizontal={true}
         contentContainerClassName="px-4 py-1 gap-4"
         showsHorizontalScrollIndicator={false}
@@ -103,7 +100,7 @@ function Header() {
             onPress={() => handlePress(index)}
           />
         ))}
-      </ScrollView>
+      </ScrollView> */}
     </View>
   );
 }
@@ -168,7 +165,7 @@ function Content({ onScroll }: ContentProps) {
 
   return (
     <FlatList
-      contentContainerClassName="pt-12 pb-14 gap-4"
+      contentContainerClassName="pt-11 pb-14 gap-4"
       data={loading ? [] : data.slice(3)}
       removeClippedSubviews={true}
       keyExtractor={(item, index) => item.name + index}
@@ -207,9 +204,9 @@ type ItemProps = {
   onPress: () => void;
 };
 
-function Item({ active, label, small, onPress }: ItemProps) {
+function CategoryItem({ active, label, small, onPress }: ItemProps) {
   return (
-    <TouchableOpacity className="items-center relative" onPress={onPress}>
+    <TouchableOpacity className="pb-1 items-center relative" onPress={onPress}>
       <Text
         className={`${small ? "text-lg" : "text-xl"} ${active ? "text-main" : "text-main-dark2"}`}
       >
@@ -217,7 +214,7 @@ function Item({ active, label, small, onPress }: ItemProps) {
       </Text>
 
       <View
-        className={`w-1/2 h-0.5  rounded-full absolute -bottom-1 ${active ? "bg-main" : "transparent"}`}
+        className={`w-1/2 h-0.5  rounded-full absolute bottom-0 ${active ? "bg-main" : "transparent"}`}
       />
     </TouchableOpacity>
   );
