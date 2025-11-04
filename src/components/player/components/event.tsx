@@ -1,4 +1,3 @@
-import usePanGesure from "@/hooks/usePanGesure";
 import { Dimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { updateBrightness } from "../store/useBrightness";
@@ -18,6 +17,7 @@ import { useSnapshot } from "valtio";
 import Icon from "@/components/icon";
 import eventEmitter from "@/hooks/eventEmitter";
 import { videoStore } from "../store/useVideo";
+import usePanGesure from "@/hooks/usePanGesure";
 
 const { width } = Dimensions.get("window");
 
@@ -48,7 +48,7 @@ export default function () {
   //滑动手势 进度
   const panProgres = Gesture.Pan()
     .runOnJS(true)
-    .activeOffsetX([-10, 10])
+    .activeOffsetX([-5, 5])
     .activeOffsetY([-1000, 1000])
     .onStart(() => {
       pause();
@@ -79,27 +79,26 @@ export default function () {
   }, "vertical");
 
   //容器手势
-  const containerGesture = Gesture.Exclusive(panProgres, doubleTap, singleTap);
-
-  //左元素手势
-  const leftGesture = Gesture.Exclusive(longPress, panBright);
-
-  //右元素手势
-  const rightGesture = Gesture.Exclusive(longPress, panVolume);
+  const containerGesture = Gesture.Exclusive(
+    longPress,
+    panProgres,
+    doubleTap,
+    singleTap
+  );
 
   return (
     <GestureDetector gesture={containerGesture}>
       <View className="wh-full flex-row justify-between items-center absolute top-0 left-0 z-10">
         {/* 三倍速 和 亮度 */}
-        <GestureDetector gesture={leftGesture}>
-          <View className=" w-1/4 h-1/3" />
+        <GestureDetector gesture={panBright}>
+          <View className="flex-1 h-full " />
         </GestureDetector>
 
         <PlayTip />
 
         {/* 三倍速 和 声音*/}
-        <GestureDetector gesture={rightGesture}>
-          <View className="w-1/4 h-1/3" />
+        <GestureDetector gesture={panVolume}>
+          <View className="flex-1 h-full" />
         </GestureDetector>
       </View>
     </GestureDetector>

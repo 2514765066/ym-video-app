@@ -122,11 +122,17 @@ export const updateProgress = ({
   }
 };
 
+//更新最新时间
+export const saveTime = () => {
+  historyState.selectedHistory.time = Date.now();
+};
+
 //保存数据
 export const save = () => {
   db.update(historyState.selectedHistory);
 };
 
+//更新集数
 const update = async (data: Map<string, HistoryInfo>) => {
   if (data.size == 0) return;
 

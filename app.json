@@ -10,7 +10,8 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "package": "com.zhangmingyang.ymvideo",
-      "jsEngine": "hermes"
+      "jsEngine": "hermes",
+      "permissions": ["WRITE_SETTINGS"]
     },
     "plugins": [
       "expo-router",

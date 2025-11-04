@@ -1,5 +1,5 @@
 import useFullscreen from "@/hooks/useFullscreen";
-import { historyState, save } from "@/store/useHistoryStore";
+import { save, saveTime } from "@/store/useHistoryStore";
 import { useEffect } from "react";
 import { AppState, View } from "react-native";
 import Event from "./components/event";
@@ -10,32 +10,40 @@ import Top from "./components/top";
 import Bottom from "./components/bottom";
 import Rate from "./components/rate";
 import List from "./components/list";
-import { resetBrightness } from "./store/useBrightness";
+import { restoreSystemBrightnessAsync } from "expo-brightness";
 
 export default function () {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
 
   //初始化
   useEffect(() => {
+    //进入全屏
     enterFullscreen();
+
+    //展示控件
     showControl();
 
-    historyState.selectedHistory.time = Date.now();
-
+    //进入后台保存数据
     const removeChange = AppState.addEventListener("change", state => {
       if (state != "background") {
         return;
       }
 
+      saveTime();
+
       save();
     });
 
     return () => {
+      //移除监听
       removeChange.remove();
 
-      resetBrightness();
+      //还原亮度
+      restoreSystemBrightnessAsync();
 
       exitFullscreen();
+
+      saveTime();
 
       save();
     };
