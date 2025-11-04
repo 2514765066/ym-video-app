@@ -100,6 +100,10 @@ function HistoryContent() {
       .slice(0, 5);
   }, [data]);
 
+  if (data.size == 0) {
+    return null;
+  }
+
   return (
     <View className="gap-4">
       <Text className="px-4 text-main text-lg font-bold">最近观看</Text>

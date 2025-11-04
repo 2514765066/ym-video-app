@@ -125,7 +125,7 @@ function Content() {
   };
 
   if (sections.length == 0 || (keyword && searchData.length == 0)) {
-    return <Empty />;
+    return <Empty title="暂无更多历史记录..." />;
   }
 
   if (keyword) {
