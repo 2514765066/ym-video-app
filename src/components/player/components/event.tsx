@@ -11,7 +11,7 @@ import {
   showSeek,
   updateSeek,
 } from "../store/useProgress";
-import { useRate } from "../store/useRate";
+import { openRate, resetRate } from "../store/useRate";
 import { updateVolume } from "../store/useVolume";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSnapshot } from "valtio";
@@ -24,7 +24,6 @@ const { width } = Dimensions.get("window");
 export default function () {
   const { left, right } = useSafeAreaInsets();
   const { seekRatio, duration } = useSnapshot(progressStore);
-  const { openRate, resetRate } = useRate();
 
   //单击手势
   const singleTap = Gesture.Tap().runOnJS(true).onStart(toggleControl);
@@ -38,8 +37,13 @@ export default function () {
   //长按手势
   const longPress = Gesture.LongPress()
     .runOnJS(true)
-    .onStart(openRate)
-    .onEnd(resetRate);
+    .minDuration(200)
+    .onStart(() => {
+      openRate();
+    })
+    .onEnd(() => {
+      resetRate();
+    });
 
   //滑动手势 进度
   const panProgres = Gesture.Pan()

@@ -7,7 +7,6 @@ import { progressStore, resetProgress, seekTo } from "../store/useProgress";
 import { rateStore } from "../store/useRate";
 import { volumeStore } from "../store/useVolume";
 import useM3u8 from "../hooks/useM3u8";
-import { Loading } from "@/components/loading";
 import { updateLoading } from "../store/useVideo";
 
 export default function () {
@@ -75,7 +74,6 @@ export default function () {
         backgroundColor: "#000",
       }}
       resizeMode="cover"
-      renderLoader={<Loading />}
       onLoad={onLoad}
       onProgress={onProgress}
       onBuffer={({ isBuffering }) => updateLoading(isBuffering)}

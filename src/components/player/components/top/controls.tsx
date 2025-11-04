@@ -24,7 +24,7 @@ function LeftControls() {
   return (
     <View className="flex-row items-center">
       <TouchableOpacity className="w-10 h-10 flex-center " onPress={handleBack}>
-        <Icon name="back" size={25} />
+        <Icon name="back" size={25} strokeWidth={0.5} />
       </TouchableOpacity>
     </View>
   );

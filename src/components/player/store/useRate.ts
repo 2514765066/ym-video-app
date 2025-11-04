@@ -32,32 +32,45 @@ export const rateList = [
 ];
 
 export const rateStore = proxy({
+  //原始倍速
+  originalRate: 1,
+
+  //当前倍速
   rate: 1,
+
+  //倍速提示
+  rateTip: false,
 });
 
+//设置倍速
 export const updateRate = (value: number) => {
   rateStore.rate = value;
 };
 
-//使用倍速
-export const useRate = () => {
-  //原始倍速
-  let originalRate = 1.0;
+//开启倍速
+let isOpen = false;
+export const openRate = () => {
+  if (rateStore.rate >= 3) {
+    isOpen = false;
+    return;
+  }
 
-  //开启倍速
-  const openRate = () => {
-    originalRate = rateStore.rate;
+  isOpen = true;
 
-    rateStore.rate = 3.0;
-  };
+  rateStore.originalRate = rateStore.rate;
 
-  //重置倍速
-  const resetRate = () => {
-    rateStore.rate = originalRate;
-  };
+  rateStore.rate = 3.0;
+  rateStore.rateTip = true;
+};
 
-  return {
-    openRate,
-    resetRate,
-  };
+//重置倍速
+export const resetRate = () => {
+  if (!isOpen) {
+    return;
+  }
+
+  isOpen = false;
+
+  rateStore.rate = rateStore.originalRate;
+  rateStore.rateTip = false;
 };
