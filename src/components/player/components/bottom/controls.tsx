@@ -39,6 +39,15 @@ function Button({ children, onPress }: PropsWithChildren<ButtonProps>) {
       className=" w-10 h-10 flex-center rounded-full"
       style={{
         backgroundColor: "rgba(100,100,100,0.8)",
+        boxShadow: [
+          {
+            offsetX: 0,
+            offsetY: 1,
+            blurRadius: 5,
+            spreadDistance: 0,
+            color: "rgba(0,0,0,0.5)",
+          },
+        ],
       }}
     >
       {children}
