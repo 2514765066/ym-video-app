@@ -73,7 +73,7 @@ export default function () {
         height: "100%",
         backgroundColor: "#000",
       }}
-      resizeMode="cover"
+      resizeMode="contain"
       onLoad={onLoad}
       onProgress={onProgress}
       onBuffer={({ isBuffering }) => updateLoading(isBuffering)}

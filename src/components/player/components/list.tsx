@@ -72,7 +72,7 @@ function List() {
   return (
     <View className="w-1/2 h-full pt-6 gap-2">
       <FlatList
-        className=" shrink-0"
+        className="shrink-0  grow-0"
         contentContainerStyle={{
           gap: 16,
         }}

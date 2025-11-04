@@ -11,12 +11,16 @@ import Bottom from "./components/bottom";
 import Rate from "./components/rate";
 import List from "./components/list";
 import { restoreSystemBrightnessAsync } from "expo-brightness";
+import { resetProgress } from "./store/useProgress";
 
 export default function () {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
 
   //初始化
   useEffect(() => {
+    //清空进度条
+    resetProgress();
+
     //进入全屏
     enterFullscreen();
 
