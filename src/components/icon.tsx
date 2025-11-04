@@ -22,6 +22,17 @@ import volumeOff from "@iconify/icons-fluent/speaker-off-20-regular";
 import detail from "@iconify/icons-fluent/apps-list-detail-20-regular";
 import offline from "@iconify/icons-fluent/wifi-off-20-regular";
 import history from "@iconify/icons-fluent/history-20-regular";
+import close from "@iconify/icons-fluent/dismiss-circle-20-filled";
+import enter from "@iconify/icons-fluent/arrow-enter-left-20-regular";
+import more from "@iconify/icons-fluent/more-horizontal-20-regular";
+import home from "@iconify/icons-fluent/home-20-regular";
+import category from "@iconify/icons-fluent/grid-20-regular";
+import setting from "@iconify/icons-fluent/settings-20-regular";
+import source from "@iconify/icons-fluent/sound-source-20-regular";
+import update from "@iconify/icons-fluent/arrow-circle-up-20-regular";
+import bug from "@iconify/icons-fluent/bug-20-regular";
+import globe from "@iconify/icons-fluent/globe-20-regular";
+import about from "@iconify/icons-fluent/error-circle-20-regular";
 
 const iconPacks = {
   rate,
@@ -45,10 +56,23 @@ const iconPacks = {
   detail,
   offline,
   history,
+  close,
+  enter,
+  more,
+  home,
+  category,
+  setting,
+  source,
+  update,
+  bug,
+  globe,
+  about,
 };
 
+export type IconName = keyof typeof iconPacks;
+
 type Props = {
-  name: keyof typeof iconPacks;
+  name: IconName;
   size?: number;
   color?: string;
   className?: string;

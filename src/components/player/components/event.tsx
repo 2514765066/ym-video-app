@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSnapshot } from "valtio";
 import Icon from "@/components/icon";
 import eventEmitter from "@/hooks/eventEmitter";
+import { videoStore } from "../store/useVideo";
 
 const { width } = Dimensions.get("window");
 
@@ -87,14 +88,14 @@ export default function () {
       <View className="wh-full flex-row justify-between items-center absolute top-0 left-0 z-10">
         {/* 三倍速 和 亮度 */}
         <GestureDetector gesture={leftGesture}>
-          <View className=" w-1/4 h-full " />
+          <View className=" w-1/4 h-1/3" />
         </GestureDetector>
 
         <PlayTip />
 
         {/* 三倍速 和 声音*/}
         <GestureDetector gesture={rightGesture}>
-          <View className="w-1/4 h-full " />
+          <View className="w-1/4 h-1/3" />
         </GestureDetector>
       </View>
     </GestureDetector>
@@ -103,19 +104,22 @@ export default function () {
 
 function PlayTip() {
   const { isPlay } = useSnapshot(playStore);
+  const { loading } = useSnapshot(videoStore);
 
   const tap = Gesture.Tap().runOnJS(true).onStart(play);
 
+  if (isPlay || loading) {
+    return null;
+  }
+
   return (
-    !isPlay && (
-      <GestureDetector gesture={tap}>
-        <Icon
-          name="playFill"
-          size={80}
-          stroke="rgba(0,0,0,0.02)"
-          strokeWidth={0.5}
-        />
-      </GestureDetector>
-    )
+    <GestureDetector gesture={tap}>
+      <Icon
+        name="playFill"
+        size={80}
+        stroke="rgba(0,0,0,0.02)"
+        strokeWidth={0.5}
+      />
+    </GestureDetector>
   );
 }

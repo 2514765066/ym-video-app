@@ -5,7 +5,6 @@ import { Stack } from "expo-router";
 import { View, Text } from "react-native";
 import { SystemBars } from "react-native-edge-to-edge";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useNetworkState } from "expo-network";
 import * as SplashScreen from "expo-splash-screen";
@@ -15,6 +14,7 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
+//取消关闭
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -32,29 +32,35 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <BottomSheetModalProvider>
         <SafeAreaProvider>
-          <KeyboardProvider>
-            <SystemBars
-              style="light"
-              hidden={{
-                statusBar: false,
-                navigationBar: false,
-              }}
-            />
+          <SystemBars
+            style="light"
+            hidden={{
+              statusBar: false,
+              navigationBar: false,
+            }}
+          />
 
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="(tabs)" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="(tabs)" />
 
-              <Stack.Screen name="details" />
+            <Stack.Screen name="details" />
 
-              <Stack.Screen name="search" />
+            <Stack.Screen name="search" />
 
-              <Stack.Screen name="player" />
-            </Stack>
-          </KeyboardProvider>
+            <Stack.Screen name="search-result" />
+
+            <Stack.Screen name="player" />
+
+            <Stack.Screen name="settings/source" />
+
+            <Stack.Screen name="settings/general" />
+
+            <Stack.Screen name="settings/about" />
+          </Stack>
         </SafeAreaProvider>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>

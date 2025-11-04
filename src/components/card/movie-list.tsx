@@ -1,9 +1,10 @@
 import { MovieInfo } from "@/type";
 import { router } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { updateDetail } from "@/store/useDetailStore";
 import Img from "../img";
 import { formatRemarks, formatSub } from "@/utils/format";
+import { LinearGradient } from "expo-linear-gradient";
 
 type Props = {
   data: MovieInfo;
@@ -17,9 +18,9 @@ export default function ({ data }: Props) {
   };
 
   return (
-    <Pressable onPress={handlePress}>
+    <TouchableOpacity onPress={handlePress}>
       <Base data={data} />
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -31,65 +32,63 @@ function Base({ data }: BaseProps) {
   return (
     <View className="flex-row items-center gap-3">
       {/* 图片 */}
-      <Img
-        src={data.pic}
-        className="aspect-3/4 rounded-lg overflow-hidden"
+
+      <View
+        className="relative rounded-lg overflow-hidden aspect-3/4"
         style={{
-          width: 90,
+          width: 100,
         }}
-      />
+      >
+        <Img src={data.pic} className="flex-1" />
+
+        <LinearGradient
+          colors={["transparent", "transparent", "rgba(0,0,0,0.6)"]}
+          locations={[0, 0.8, 1]}
+          className="p-1 justify-end items-end absolute inset-0"
+        >
+          <Text
+            className=" text-white"
+            style={{
+              fontSize: 10,
+            }}
+          >
+            {formatRemarks(data.remarks)}
+          </Text>
+        </LinearGradient>
+      </View>
 
       {/* 信息 */}
-      <View className="flex-1 gap-3">
+      <View className="flex-1 gap-2.5">
         {/* 标题 */}
-        <Text
-          className="font-bold text-xl text-main leading-6 tracking-wide"
-          numberOfLines={1}
-        >
+        <Text className="font-medium text-xl text-main" numberOfLines={1}>
           {data.name}
         </Text>
 
         {/* 副标题 */}
         <View className="flex-row items-center gap-2">
-          <Text className="text-main-dark1">{formatSub(data.year)}</Text>
+          <Text className="text-sub">{formatSub(data.year)}</Text>
 
           <Text className="text-main-dark2">|</Text>
 
-          <Text className="text-main-dark1">{formatSub(data.area)}</Text>
+          <Text className="text-sub">{formatSub(data.area)}</Text>
 
           <Text className="text-main-dark2">|</Text>
 
-          <Text className="text-main-dark1">{formatSub(data.lang)}</Text>
+          <Text className="text-sub">{formatSub(data.lang)}</Text>
         </View>
 
         {/* 简介 */}
         <Text
-          numberOfLines={1}
-          className="mt-auto text-main-dark1 leading-6 tracking-wide"
+          className="mt-auto flex-row gap-1 text-sub tracking-wide"
+          numberOfLines={2}
         >
-          {data.url.length > 1
-            ? formatRemarks(data.remarks)
-            : data.sub || "暂无剧情简介......"}
+          <Text className="text-main-dark2 text-xl">“</Text>
+
+          {data.content || "暂无剧情简介......"}
+
+          <Text className="text-main-dark2 text-xl">”</Text>
         </Text>
       </View>
     </View>
   );
 }
-
-// function Loading() {
-//   return (
-//     <View className="w-full flex-row items-center gap-3">
-//       <Skeleton className="w-1/4 aspect-3/4" />
-
-//       <View className="flex-1 gap-3">
-//         <Skeleton className="w-3/4 h-5" />
-
-//         <Skeleton className="w-1/3 h-5" />
-
-//         <Skeleton className="w-full h-5" />
-
-//         <Skeleton className="w-1/2 h-5" />
-//       </View>
-//     </View>
-//   );
-// }

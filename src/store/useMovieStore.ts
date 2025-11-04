@@ -1,226 +1,130 @@
-import { getRecommend } from "@/services/api";
-import { MovieInfo } from "@/type";
+import { getCategory, getMovie } from "@/services/api";
+import { Category, MovieInfo } from "@/type";
 import { proxy } from "valtio";
-
-//分类
-export const categories = [
-  {
-    label: "电影",
-    id: 20,
-    children: [
-      {
-        id: 21,
-        label: "动作",
-      },
-      {
-        id: 22,
-        label: "喜剧",
-      },
-      {
-        id: 23,
-        label: "恐怖",
-      },
-      {
-        id: 24,
-        label: "科幻",
-      },
-      {
-        id: 25,
-        label: "爱情",
-      },
-      {
-        id: 50,
-        label: "动画",
-      },
-      {
-        id: 26,
-        label: "剧情",
-      },
-      {
-        id: 27,
-        label: "战争",
-      },
-      {
-        id: 28,
-        label: "纪录",
-      },
-      {
-        id: 29,
-        label: "理论",
-      },
-    ],
-  },
-  {
-    label: "动漫",
-    id: 39,
-    children: [
-      {
-        id: 40,
-        label: "国产",
-      },
-      {
-        id: 41,
-        label: "日韩",
-      },
-      {
-        id: 42,
-        label: "欧美",
-      },
-      {
-        id: 43,
-        label: "港台",
-      },
-      {
-        id: 44,
-        label: "海外",
-      },
-    ],
-  },
-  {
-    label: "综艺",
-    id: 45,
-    children: [
-      {
-        id: 46,
-        label: "大陆",
-      },
-      {
-        id: 47,
-        label: "港台",
-      },
-      {
-        id: 48,
-        label: "日韩",
-      },
-      {
-        id: 49,
-        label: "欧美",
-      },
-    ],
-  },
-  {
-    label: "电视剧",
-    id: 30,
-    children: [
-      {
-        id: 31,
-        label: "国产",
-      },
-      {
-        id: 32,
-        label: "欧美",
-      },
-      {
-        id: 33,
-        label: "香港",
-      },
-      {
-        id: 34,
-        label: "韩国",
-      },
-      {
-        id: 35,
-        label: "台湾",
-      },
-      {
-        id: 36,
-        label: "日本",
-      },
-      {
-        id: 37,
-        label: "海外",
-      },
-      {
-        id: 38,
-        label: "泰国",
-      },
-    ],
-  },
-];
+import { proxyMap } from "valtio/utils";
 
 type MovieStore = {
+  category: Map<number, Category>;
+
+  childCategory: Map<number, Category[]>;
+
+  selectedCategoryID: number;
+
+  selectedChildCategoryID: number;
+
   data: MovieInfo[];
-
-  selectedCategory: number;
-
-  selectedChildCategory: number;
-
-  loading: boolean;
 
   page: number;
 
   pageCount: number;
+
+  status: "init" | "loading" | "empty" | "end" | "finish";
+};
+
+const createInitState = (): MovieStore => {
+  return {
+    //分类
+    category: proxyMap(),
+
+    //子分类
+    childCategory: proxyMap(),
+
+    //选中的大分类
+    selectedCategoryID: 0,
+
+    //选中的小分类
+    selectedChildCategoryID: 0,
+
+    //大分类数据
+    data: [],
+
+    //当前页数
+    page: 0,
+
+    //总共页数
+    pageCount: 0,
+
+    //状态
+    status: "init",
+  };
 };
 
 //仓库
-export const movieState = proxy<MovieStore>({
-  //大分类数据
-  data: [],
-
-  //选中的大分类
-  selectedCategory: 0,
-
-  //选中的小分类
-  selectedChildCategory: 0,
-
-  //是否重新加载分类
-  loading: false,
-
-  //当前页数
-  page: 0,
-
-  //总共页数
-  pageCount: 0,
-});
-
-//获取当前的type-id
-const getTypeId = () => {
-  const { children } = categories[movieState.selectedCategory];
-  const { id } = children[movieState.selectedChildCategory];
-
-  return id;
-};
+export const movieState = proxy<MovieStore>();
 
 //获取数据
-const getCategoryData = async () => {
-  const tid = getTypeId();
+const getData = async () => {
+  movieState.status = "loading";
 
-  const res = await getRecommend({
-    tid,
-    page: movieState.page + 1,
+  const res = await getMovie({
+    tid: movieState.selectedChildCategoryID,
+    page: ++movieState.page,
   });
 
-  movieState.page++;
+  //如果没有资源
+  if (res.pageCount == 0) {
+    movieState.status = "empty";
+
+    return res;
+  }
+
+  //所有资源请求完成
+  if (movieState.page == res.pageCount) {
+    movieState.status = "end";
+
+    return res;
+  }
+
+  movieState.status = "finish";
 
   return res;
 };
 
 //切换大分类
-export const changeCategory = (index: number = 0) => {
-  movieState.selectedCategory = index;
+export const updateCategory = (id: number) => {
+  if (movieState.selectedCategoryID == id) {
+    return;
+  }
 
-  changeChildCategory(0);
+  movieState.selectedCategoryID = id;
+
+  const childCategory = movieState.childCategory.get(id);
+
+  if (childCategory) {
+    updateChildCategory(childCategory[0].id);
+    return;
+  }
+
+  updateChildCategory(id);
 };
 
 //切换小分类
-export const changeChildCategory = async (index: number) => {
-  movieState.loading = true;
+export const updateChildCategory = async (id: number) => {
+  //选择同一个分类
+  if (movieState.selectedChildCategoryID == id) {
+    return;
+  }
 
-  movieState.selectedChildCategory = index;
+  movieState.data = [];
+
+  movieState.selectedChildCategoryID = id;
 
   movieState.page = 0;
 
-  const { data, pageCount } = await getCategoryData();
+  const { data, pageCount } = await getData();
+
+  //解决快速点击页面出现错乱的bug
+  if (movieState.selectedChildCategoryID != id) {
+    return;
+  }
 
   movieState.data = data;
 
   movieState.pageCount = pageCount;
-
-  movieState.loading = false;
 };
 
 //加载更多数据
-export const loadCategoryData = async () => {
+export const loadData = async () => {
   if (movieState.data.length == 0) {
     return;
   }
@@ -229,14 +133,21 @@ export const loadCategoryData = async () => {
     return;
   }
 
-  const { data } = await getCategoryData();
+  const { data } = await getData();
 
   movieState.data.push(...data);
 };
 
-//初始化
-const init = () => {
-  changeCategory();
-};
+export const init = async () => {
+  Object.assign(movieState, createInitState());
 
-init();
+  movieState.status = "loading";
+
+  const { firstID, category, childCategory } = await getCategory();
+
+  movieState.category = category;
+
+  movieState.childCategory = childCategory;
+
+  updateCategory(firstID);
+};

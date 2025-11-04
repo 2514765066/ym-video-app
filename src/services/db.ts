@@ -1,6 +1,7 @@
 import { HistoryInfo } from "@/type";
 import { openDatabaseSync } from "expo-sqlite";
-import { minVersion, version } from "./version";
+import { minVersion, appVersion } from "./info";
+import { formatVersion } from "@/utils/format";
 
 export const db = openDatabaseSync(__DEV__ ? "test.sqlite" : "db.sqlite");
 
@@ -17,26 +18,26 @@ db.execSync(
 );
 
 interface Row {
-  name: string;
+  id: string;
   version: number;
   data: string;
 }
 
 //查询
-export const select = async () => {
+export const select = async (): Promise<[string, HistoryInfo][]> => {
   const res: Row[] = await db.getAllAsync(
     `select * from ${dbName} where version >= ?`,
-    [minVersion]
+    [formatVersion(minVersion)]
   );
 
-  return res.map(item => JSON.parse(item.data)) as HistoryInfo[];
+  return res.map(item => [item.id, JSON.parse(item.data)]);
 };
 
 //插入
 export const insert = async (data: HistoryInfo) => {
   await db.runAsync(
     `insert into ${dbName} (id, version,data) values (?, ?, ?)`,
-    [data.id, version, JSON.stringify(data)]
+    [data.id, formatVersion(appVersion), JSON.stringify(data)]
   );
 };
 

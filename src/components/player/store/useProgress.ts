@@ -1,6 +1,4 @@
-import { historyState } from "@/store/useHistoryStore";
 import { proxy } from "valtio";
-import { subscribeKey } from "valtio/utils";
 import { videoRef } from "./useEl";
 
 export const progressStore = proxy({
@@ -11,11 +9,11 @@ export const progressStore = proxy({
   seekVisible: false,
 });
 
-//切换集数制空
-subscribeKey(historyState.selectedHistory, "history", () => {
+//重置播放进度
+export const resetProgress = () => {
   progressStore.currentTime = 0;
   progressStore.duration = 0;
-});
+};
 
 //显示进度条提示
 export const showSeek = () => {

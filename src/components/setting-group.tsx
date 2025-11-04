@@ -1,0 +1,68 @@
+import { TouchableOpacity, View, Text } from "react-native";
+import Icon, { IconName } from "./icon";
+import { isValidElement, ReactNode } from "react";
+
+interface RenderItem<T> {
+  item: T;
+  index: number;
+}
+
+type GroupProps<T> = {
+  data: T[];
+  renderItem?: (props: RenderItem<T>) => ReactNode;
+};
+
+export function Group<T>({ data, renderItem }: GroupProps<T>) {
+  return (
+    <View className="rounded-xl bg-222">
+      {data.map((item, index) => (
+        <View
+          key={index}
+          className={`w-full h-14 border-333 ${index != data.length - 1 && "border-b"}`}
+        >
+          {isValidElement(item)
+            ? item
+            : renderItem &&
+              renderItem({
+                item,
+                index,
+              })}
+        </View>
+      ))}
+    </View>
+  );
+}
+
+type ItemProps = {
+  label: string;
+  sub?: string | ReactNode;
+  icon?: IconName;
+  onPress?: () => void;
+
+  rightVisible?: boolean;
+};
+
+export function GroupItem({
+  label,
+  sub,
+  icon,
+  rightVisible,
+  onPress,
+}: ItemProps) {
+  return (
+    <TouchableOpacity
+      className="flex-1 px-4 flex-row items-center gap-2"
+      onPress={() => onPress && onPress()}
+    >
+      {icon && <Icon name={icon} size={22} />}
+
+      <Text className="mr-auto text-main text-lg">{label}</Text>
+
+      {typeof sub == "string" ? <Text className="text-sub">{sub}</Text> : sub}
+
+      {rightVisible && (
+        <Icon name="back" color="#888" className="rotate-180" size={18} />
+      )}
+    </TouchableOpacity>
+  );
+}

@@ -7,7 +7,7 @@ export const controlStore = proxy({
 let timer: number;
 
 //展示控件模块
-export const showControl = (delay: number = 3000) => {
+export const showControl = (delay: number = 5000) => {
   controlStore.visible = true;
 
   clearTimeout(timer);

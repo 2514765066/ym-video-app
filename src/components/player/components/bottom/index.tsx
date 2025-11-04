@@ -13,19 +13,21 @@ export default function () {
 
   const padding = Math.max(left, right, 24);
 
-  return (
-    visible && (
-      <View
-        className="w-full gap-3 absolute bottom-0 left-0 z-30"
-        style={{
-          paddingLeft: padding,
-          paddingRight: padding,
-        }}
-      >
-        {!seekVisible && <Controls />}
+  if (!seekVisible && !visible) {
+    return null;
+  }
 
-        <Progress />
-      </View>
-    )
+  return (
+    <View
+      className="w-full gap-3 absolute bottom-0 left-0 z-30"
+      style={{
+        paddingLeft: padding,
+        paddingRight: padding,
+      }}
+    >
+      {!seekVisible && <Controls />}
+
+      <Progress />
+    </View>
   );
 }

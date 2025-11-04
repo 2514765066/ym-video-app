@@ -1,11 +1,12 @@
-import { getDetail } from "@/services/api";
+import { getUpdate } from "@/services/api";
 import * as db from "@/services/db";
 import { HistoryInfo, Progress } from "@/type";
 import { proxy } from "valtio";
-import { subscribeKey } from "valtio/utils";
+import { proxyMap } from "valtio/utils";
+import { getSource } from "./useSourceStore";
 
 type HistoryStore = {
-  data: HistoryInfo[];
+  data: Map<string, HistoryInfo>;
 
   selectedID: string;
 
@@ -16,25 +17,30 @@ type HistoryStore = {
 
 //数据
 export const historyState = proxy<HistoryStore>({
-  data: [],
+  data: proxyMap(),
 
   //选中的历史记录名称
   selectedID: "",
 
-  selectedHistory: {
-    name: "",
-    history: 0,
-    pic: "",
-    sub: "",
-    year: "",
-    area: "",
-    lang: "",
-    type: "",
-    time: 0,
-    id: "",
-    url: [],
-    remarks: "",
-    progress: [],
+  //选中的历史记录
+  get selectedHistory() {
+    return (
+      this.data.get(this.selectedID) || {
+        name: "",
+        history: 0,
+        pic: "",
+        content: "",
+        year: "",
+        area: "",
+        lang: "",
+        type: "",
+        time: 0,
+        id: "",
+        url: [],
+        remarks: "",
+        progress: [],
+      }
+    );
   },
 
   get selectedProgress() {
@@ -46,22 +52,10 @@ export const historyState = proxy<HistoryStore>({
   },
 });
 
-subscribeKey(historyState, "selectedID", value => {
-  const res = historyState.data.find(item => item.id == value);
-
-  if (!res) return;
-
-  historyState.selectedHistory = res;
-});
-
-// 判断是否存在
-export const has = (name: string) => {
-  return historyState.data.some(item => item.name == name);
-};
-
 // 添加历史记录
 export const add = (option: HistoryInfo) => {
-  if (has(option.name)) {
+  if (historyState.data.has(option.id)) {
+    historyState.data.get(option.id)!.history = option.history;
     return;
   }
 
@@ -70,18 +64,25 @@ export const add = (option: HistoryInfo) => {
     time: Date.now(),
   };
 
-  historyState.data.push(data);
+  historyState.data.set(option.id, data);
 
   db.insert(data);
 };
 
+//判断是否存在
+export const has = (id: string) => {
+  return historyState.data.has(id);
+};
+
 //移除历史记录
 export const remove = async (id: string) => {
-  const index = historyState.data.findIndex(item => item.id == id);
+  if (!has(id)) {
+    return;
+  }
 
-  await db.remove(id);
+  historyState.data.delete(id);
 
-  historyState.data.splice(index, 1);
+  db.remove(id);
 };
 
 // 播放
@@ -104,7 +105,6 @@ interface UpdateProgressOption {
   currentTime?: number;
   duration?: number;
 }
-
 export const updateProgress = ({
   currentTime,
   duration,
@@ -127,25 +127,50 @@ export const save = () => {
   db.update(historyState.selectedHistory);
 };
 
-//初始化
-const init = async () => {
-  //需要优化
-  const res = await db.select();
+const update = async (data: Map<string, HistoryInfo>) => {
+  if (data.size == 0) return;
 
-  const shouldUpdate = res
-    .filter(item => item.remarks.includes("更新"))
-    .map((item, index) => ({
-      index,
-      id: item.id,
-    }));
+  const group = new Map<string, string[]>();
 
-  const detailData = await getDetail(shouldUpdate.map(item => item.id));
+  data.forEach(item => {
+    if (!item.remarks.includes("更新")) {
+      return;
+    }
 
-  shouldUpdate.forEach(({ index }, i) => {
-    res[index].url = detailData[i].url;
+    if (!group.has(item.source)) {
+      group.set(item.source, []);
+    }
+
+    group.get(item.source)!.push(item.id);
   });
 
-  historyState.data = res;
+  if (group.size == 0) return;
+
+  const results = await Promise.all(
+    Array.from(group.entries()).map(([sourceName, ids]) =>
+      getUpdate(getSource(sourceName), ids)
+    )
+  );
+
+  for (const detailMap of results) {
+    for (const item of detailMap) {
+      const old = data.get(item.id);
+      if (old) data.set(item.id, { ...old, ...item });
+    }
+  }
+};
+
+//初始化
+const init = async () => {
+  const res = new Map(await db.select());
+
+  if (res.size == 0) {
+    return;
+  }
+
+  await update(res);
+
+  historyState.data = proxyMap(res);
 };
 
 init();

@@ -10,17 +10,23 @@ dayjs.extend(isoWeek);
 //处理综艺的日期
 export const formatRemarks = (remarks: string) => {
   return remarks.replace(/(\d{4})(\d{2})(\d{2})/g, (_, year, month, day) => {
+    const date = new Date();
+
+    if (date.getFullYear() == year) {
+      return `${month}-${day}`;
+    }
+
     return `${year}-${month}-${day}`;
   });
 };
 
 //处理地区语言等副标题
-export const formatSub = (sub: string) => {
-  if (!sub) {
+export const formatSub = (content: string) => {
+  if (!content) {
     return "未知";
   }
 
-  const arr = sub.split(",");
+  const arr = content.split(",");
 
   return arr[0] + (arr.length > 1 ? "..." : "");
 };
@@ -30,7 +36,7 @@ const pad = (num: number) => {
   return num.toString().padStart(2, "0");
 };
 
-//处理时间
+//格式化秒
 export const formatSeconde = (seconds: number) => {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -44,7 +50,7 @@ export const formatSeconde = (seconds: number) => {
 };
 
 //格式化历史记录时间
-export const formatHistory = (date: number) => {
+export const formatDay = (date: number) => {
   const d = dayjs(date);
   const now = dayjs();
 
@@ -62,4 +68,19 @@ export const formatHistory = (date: number) => {
   }
 
   return d.format("YYYY-MM-DD HH:mm");
+};
+
+//格式化版本
+export const formatVersion = (version: string) => {
+  const [major, minor, patch] = version.split(".").map(Number);
+
+  return major * 10000 + minor * 100 + patch;
+};
+
+//格式化简介
+export const formatContent = (content: string) => {
+  return content
+    .replace(/<\/?.+?>/g, "")
+    .replace(/&nbsp;/g, "")
+    .trim();
 };

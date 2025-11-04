@@ -40,7 +40,7 @@ export default function () {
   }
 
   return (
-    <View className="wh-full pt-4 items-center absolute top-0 left-0 z-10">
+    <View className="wh-full flex-center absolute top-0 left-0 z-10">
       {tpyeMap[type]}
     </View>
   );
@@ -54,7 +54,7 @@ type BaseTipProps = {
 function BaseTip({ data, iconComponent }: BaseTipProps) {
   return (
     <View
-      className="w-1/4 flex-row items-center rounded-2xl overflow-hidden"
+      className="w-1/4 flex-row items-center absolute top-4 rounded-2xl overflow-hidden"
       style={{
         backgroundColor: "rgba(110,110,110,0.8)",
         boxShadow: [

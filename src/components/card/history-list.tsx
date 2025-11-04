@@ -1,9 +1,11 @@
 import Img from "@/components/img";
 import { HistoryInfo } from "@/type";
 import { formatRemarks } from "@/utils/format";
-import { formatHistory } from "@/utils/format";
+import { formatDay } from "@/utils/format";
+import { LinearGradient } from "expo-linear-gradient";
 import { useMemo } from "react";
 import { Text, View } from "react-native";
+import Icon from "../icon";
 
 type Props = {
   data: HistoryInfo;
@@ -28,35 +30,49 @@ export default function ({ data }: Props) {
     <View className="flex-row items-center gap-3">
       {/* 图片 */}
 
-      <Img
-        src={data.pic}
-        className="aspect-3/4 rounded-lg overflow-hidden"
-        style={{
-          width: 90,
-        }}
-      />
+      <View className="relative rounded-lg overflow-hidden">
+        <Img
+          src={data.pic}
+          className="aspect-3/4 "
+          style={{
+            width: 100,
+          }}
+        />
+
+        <LinearGradient
+          colors={["transparent", "transparent", "rgba(0,0,0,0.6)"]}
+          locations={[0, 0.8, 1]}
+          className="p-1 justify-end items-end absolute inset-0"
+        >
+          <Text
+            className=" text-white"
+            style={{
+              fontSize: 10,
+            }}
+          >
+            {formatRemarks(data.remarks)}
+          </Text>
+        </LinearGradient>
+      </View>
 
       {/* 信息 */}
       <View className="flex-1 gap-3">
         {/* 标题 */}
-
-        <Text numberOfLines={1} className="font-bold text-xl text-main">
+        <Text className="font-medium text-xl text-main" numberOfLines={1}>
           {data.name}
         </Text>
 
-        {data.remarks.includes("更新") && (
-          <View className="flex-row">
-            <Text className="px-2 py-0.5 flex-center rounded-full text-sm text-222 bg-main">
-              {formatRemarks(data.remarks)}
-            </Text>
-          </View>
-        )}
-
-        <Text className="text-main-dark1">
+        <Text className="text-sub">
           {data.url[data.history].label} · 观看至{progress}%
         </Text>
 
-        <Text className="text-main-dark1">{formatHistory(data.time)}</Text>
+        <View className="flex-row  items-center">
+          <Icon name="source" color="#888" size={20} className="mr-1" />
+
+          <Text className="text-sub mr-3">{data.source}</Text>
+
+          <Text className="text-sub">{formatDay(data.time)}</Text>
+        </View>
       </View>
     </View>
   );

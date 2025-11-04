@@ -10,6 +10,7 @@ import Top from "./components/top";
 import Bottom from "./components/bottom";
 import Rate from "./components/rate";
 import List from "./components/list";
+import { resetBrightness } from "./store/useBrightness";
 
 export default function () {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
@@ -31,6 +32,8 @@ export default function () {
 
     return () => {
       removeChange.remove();
+
+      resetBrightness();
 
       exitFullscreen();
 

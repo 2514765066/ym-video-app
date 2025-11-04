@@ -10,7 +10,7 @@ export const detailState = proxy<MovieStore>({
   data: {
     name: "",
     pic: "",
-    sub: "",
+    content: "",
     id: "",
     year: "",
     area: "",
@@ -21,6 +21,7 @@ export const detailState = proxy<MovieStore>({
     history: 0,
     time: 0,
     progress: [],
+    source: "",
   },
 });
 

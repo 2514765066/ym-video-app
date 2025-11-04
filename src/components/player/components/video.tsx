@@ -3,10 +3,12 @@ import Video, { OnLoadData, OnProgressData } from "react-native-video";
 import { useSnapshot } from "valtio";
 import { videoRef } from "../store/useEl";
 import { play, playStore } from "../store/usePlay";
-import { progressStore, seekTo } from "../store/useProgress";
+import { progressStore, resetProgress, seekTo } from "../store/useProgress";
 import { rateStore } from "../store/useRate";
 import { volumeStore } from "../store/useVolume";
 import useM3u8 from "../hooks/useM3u8";
+import { Loading } from "@/components/loading";
+import { updateLoading } from "../store/useVideo";
 
 export default function () {
   const { isPlay } = useSnapshot(playStore);
@@ -44,6 +46,12 @@ export default function () {
     progressStore.currentTime = currentTime;
   };
 
+  const onLoadStart = () => {
+    resetProgress();
+
+    updateLoading(true);
+  };
+
   if (!uri) {
     return null;
   }
@@ -56,14 +64,22 @@ export default function () {
       ref={videoRef}
       source={{
         uri,
+        bufferConfig: {
+          maxBufferMs: 1000 * 60 * 5,
+          cacheSizeMB: 200,
+        },
       }}
       style={{
         width: "100%",
         height: "100%",
         backgroundColor: "#000",
       }}
+      resizeMode="cover"
+      renderLoader={<Loading />}
       onLoad={onLoad}
       onProgress={onProgress}
+      onBuffer={({ isBuffering }) => updateLoading(isBuffering)}
+      onLoadStart={onLoadStart}
     />
   );
 }

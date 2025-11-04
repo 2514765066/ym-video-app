@@ -1,0 +1,63 @@
+import { View } from "react-native";
+import Icon from "./icon";
+
+export function LoadingGlobal() {
+  return (
+    <View
+      className="w-screen h-screen flex-center absolute inset-0 pointer-events-none"
+      style={{
+        zIndex: 100,
+      }}
+    >
+      <Icon
+        name="loading"
+        size={35}
+        color="rgba(255,255,255,0.3)"
+        style={{
+          animationDuration: 1000,
+          animationIterationCount: "infinite",
+          animationTimingFunction: "linear",
+          animationName: {
+            0: {
+              transform: [{ rotate: "0deg" }],
+            },
+            "50%": {
+              transform: [{ rotate: "180deg" }],
+            },
+            "100%": {
+              transform: [{ rotate: "360deg" }],
+            },
+          },
+        }}
+      />
+    </View>
+  );
+}
+
+export function Loading() {
+  return (
+    <View className="flex-1 flex-center">
+      <Icon
+        name="loading"
+        size={35}
+        color="rgba(255,255,255,0.3)"
+        style={{
+          animationDuration: 1000,
+          animationIterationCount: "infinite",
+          animationTimingFunction: "linear",
+          animationName: {
+            0: {
+              transform: [{ rotate: "0deg" }],
+            },
+            "50%": {
+              transform: [{ rotate: "180deg" }],
+            },
+            "100%": {
+              transform: [{ rotate: "360deg" }],
+            },
+          },
+        }}
+      />
+    </View>
+  );
+}

@@ -1,3 +1,17 @@
+import { IconName } from "./components/icon";
+
+//暴风资源list返回值
+export type List_Res = {
+  class: List_Res_Class[];
+};
+
+//分类
+export type List_Res_Class = {
+  type_id: number;
+  type_pid: number;
+  type_name: string;
+};
+
 //暴风资源detail返回值
 export type Detail_Res = {
   total: number;
@@ -6,6 +20,7 @@ export type Detail_Res = {
   list: Detail_Res_List[];
 };
 
+//详情列表
 export type Detail_Res_List = {
   vod_content: string;
   vod_id: number;
@@ -19,7 +34,7 @@ export type Detail_Res_List = {
   type_name: string;
   vod_remarks: string;
   vod_play_from: string;
-  vod_douban_score: number;
+  vod_douban_score: string;
 };
 
 //选集
@@ -45,7 +60,7 @@ export type HistoryInfo = MovieInfo & {
 //电影信息
 export type MovieInfo = {
   name: string;
-  sub: string;
+  content: string;
   id: string;
   pic: string;
   year: string;
@@ -54,4 +69,33 @@ export type MovieInfo = {
   type: string;
   url: Episode[];
   remarks: string;
+  source: string;
+  // score: string;
+};
+
+//更新信息
+export type UpdateInfo = {
+  id: string;
+  url: Episode[];
+  remarks: string;
+};
+
+//搜索历史
+export type KeywordHistory = {
+  time: number;
+  label: string;
+};
+
+//分类
+export type Category = {
+  label: string;
+  id: number;
+};
+
+//设置
+export type SetItem = {
+  label: string;
+  sub?: string;
+  icon?: IconName;
+  onPress?: () => void;
 };

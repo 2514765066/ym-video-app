@@ -14,7 +14,7 @@ export type BottomSheetHandle = {
 };
 
 type Props = {
-  snapPoints: (string | number)[];
+  snapPoints?: (string | number)[];
 };
 
 export default forwardRef<BottomSheetHandle, PropsWithChildren<Props>>(
@@ -52,7 +52,7 @@ export default forwardRef<BottomSheetHandle, PropsWithChildren<Props>>(
       <BottomSheetModal
         ref={bottomSheetRef}
         snapPoints={snapPoints}
-        enableDynamicSizing={false}
+        enableDynamicSizing={!snapPoints}
         enableContentPanningGesture={false}
         enablePanDownToClose={true}
         backdropComponent={props => (
@@ -63,9 +63,6 @@ export default forwardRef<BottomSheetHandle, PropsWithChildren<Props>>(
             opacity={0.5}
           />
         )}
-        containerStyle={{
-          zIndex: 50,
-        }}
         backgroundStyle={{
           backgroundColor: "#202020",
         }}

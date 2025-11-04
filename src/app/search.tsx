@@ -1,104 +1,200 @@
-import MovieList from "@/components/card/movie-list";
 import Icon from "@/components/icon";
-import SearchBar from "@/components/search-bar";
-import TitleBar, { BackControl } from "@/components/title-bar";
-import useLoading from "@/hooks/useLoading";
-import { useScrollTop } from "@/hooks/useScrollTop";
-import { loadData, searchState } from "@/store/useSearchStore";
-import { MovieInfo } from "@/type";
+import TitleBar from "@/components/title-bar";
 import {
-  FlatList,
-  View,
-  Text,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+  add,
+  clear,
+  remove,
+  searchState,
+  updateTime,
+} from "@/store/useSearchStore";
+import { KeywordHistory } from "@/type";
+import { formatDay } from "@/utils/format";
+import { createRef, useMemo } from "react";
+import { FlatList, TouchableOpacity, View, Text } from "react-native";
 import { useSnapshot } from "valtio";
+import { BottomSheetHandle } from "@/components/bottom-sheet";
+import BottomSheetMenu, {
+  BottomSheetMenuHandle,
+} from "@/components/bottom-sheet/bottom-sheet-menu";
+import { router, useFocusEffect } from "expo-router";
+import { searchData } from "@/store/useSearchDataStore";
+import Empty from "@/components/empty";
+import SearchBar, { SearchBarHandle } from "@/components/search-bar";
+
+const moreRef = createRef<BottomSheetMenuHandle>();
+
+const bottomSheetRef = createRef<BottomSheetHandle>();
+
+const searchBarRef = createRef<SearchBarHandle>();
 
 export default function () {
-  const { isTop, onScroll } = useScrollTop();
+  const handleMore = () => {
+    bottomSheetRef.current?.open();
+  };
+
+  const handleSubmit = (keyword: string) => {
+    add(keyword);
+
+    searchData(keyword);
+
+    router.push("/search-result");
+  };
+
+  //进入页面打开键盘
+  useFocusEffect(() => {
+    const timer = setTimeout(() => {
+      searchBarRef.current?.focus();
+    }, 50);
+
+    return () => clearTimeout(timer);
+  });
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
-      <TitleBar blur={!isTop} title="搜索" leftComponent={<BackControl />} />
+    <View className="flex-1 bg-bg">
+      <TitleBar
+        boxShadow={false}
+        content={
+          <View className="px-4 py-1 flex-1 flex-row gap-2">
+            <SearchBar onSubmit={handleSubmit} ref={searchBarRef} />
 
-      <SearchBar />
+            <TouchableOpacity
+              className="h-full aspect-square flex-center bg-222 rounded-xl"
+              onPress={handleMore}
+            >
+              <Icon name="more" size={24} color="rgba(255,255,255,0.6)" />
+            </TouchableOpacity>
+          </View>
+        }
+      />
 
-      <Content onScroll={onScroll} />
-    </SafeAreaView>
-  );
-}
+      <View className="flex-1 px-4">
+        <Content />
+      </View>
 
-function Header() {
-  const { keyword } = useSnapshot(searchState);
+      <BottomSheetMenu
+        ref={moreRef}
+        title={(keyword: string) => keyword}
+        data={[
+          [
+            {
+              label: `搜索`,
+              icon: "search",
+              value: "search",
+              onPress(keyword: string) {
+                moreRef.current?.close();
 
-  return <Text className="text-main-dark1 text-xl">"{keyword}"的搜索结果</Text>;
-}
+                searchData(keyword);
 
-type ContentProps = {
-  onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
-};
+                updateTime(keyword);
 
-function Content({ onScroll }: ContentProps) {
-  const { data, loading } = useSnapshot(searchState);
+                router.push("/search-result");
+              },
+            },
+          ],
+          [
+            {
+              label: `删除`,
+              icon: "remove",
+              value: "remove",
+              style: {
+                color: "#f87171",
+              },
+              onPress(keyword: string) {
+                remove(keyword);
 
-  //加载更多数据
-  const loadMoreData = useLoading(loadData);
+                moreRef.current?.close();
+              },
+            },
+          ],
+        ]}
+      />
 
-  return (
-    <FlatList
-      contentContainerClassName="px-4 pt-12 pb-18 gap-4"
-      data={loading ? [] : data}
-      keyExtractor={(item, index) => item.name + index}
-      showsVerticalScrollIndicator={false}
-      renderItem={({ item }) => <MovieList data={item as MovieInfo} />}
-      ListHeaderComponent={Header}
-      ListFooterComponent={Footer}
-      onScroll={onScroll}
-      onEndReached={loadMoreData}
-    />
-  );
-}
+      <BottomSheetMenu
+        ref={bottomSheetRef}
+        title="更多操作"
+        data={[
+          [
+            {
+              label: `删除所有历史`,
+              icon: "remove",
+              value: "remove",
+              style: {
+                color: "#f87171",
+              },
+              onPress() {
+                bottomSheetRef.current?.close();
 
-function Footer() {
-  const { page, pageCount } = useSnapshot(searchState);
-
-  return (
-    <View className=" py-2 flex-center">
-      {page == pageCount ? (
-        <Text className="text-main-dark2 text-xl">到底了~</Text>
-      ) : (
-        <Loading />
-      )}
+                clear();
+              },
+            },
+          ],
+        ]}
+      />
     </View>
   );
 }
 
-function Loading() {
+function Content() {
+  const { data } = useSnapshot(searchState);
+
+  const sortData = useMemo(() => {
+    return Array.from(data.values()).sort((a, b) => b.time - a.time);
+  }, [data]);
+
+  const handleSearch = (keyword: string) => {
+    searchData(keyword);
+
+    updateTime(keyword);
+
+    router.push("/search-result");
+  };
+
+  const handleMore = (keyword: string) => {
+    moreRef.current?.open(keyword);
+  };
+
+  if (sortData.length == 0) {
+    return <Empty />;
+  }
+
   return (
-    <View className="flex-1 flex-center">
-      <Icon
-        name="loading"
-        size={35}
-        color="rgba(255,255,255,0.3)"
-        style={{
-          animationDuration: 1000,
-          animationIterationCount: "infinite",
-          animationTimingFunction: "linear",
-          animationName: {
-            0: {
-              transform: [{ rotate: "0deg" }],
-            },
-            "50%": {
-              transform: [{ rotate: "180deg" }],
-            },
-            "100%": {
-              transform: [{ rotate: "360deg" }],
-            },
-          },
-        }}
-      />
+    <FlatList
+      contentContainerClassName="py-2 gap-4"
+      data={sortData}
+      showsVerticalScrollIndicator={false}
+      keyExtractor={item => String(item.time)}
+      renderItem={({ item }) => {
+        return (
+          <TouchableOpacity
+            className="px-1"
+            onPress={() => handleSearch(item.label)}
+            onLongPress={() => handleMore(item.label)}
+            delayLongPress={200}
+          >
+            <Item data={item} />
+          </TouchableOpacity>
+        );
+      }}
+    />
+  );
+}
+
+type ItemProps = {
+  data: KeywordHistory;
+};
+
+function Item({ data }: ItemProps) {
+  return (
+    <View className="flex-row justify-between items-center gap-2">
+      <View className="flex-1">
+        <Text className="text-main-dark1 text-lg" numberOfLines={1}>
+          {data.label}
+        </Text>
+
+        <Text className="text-main-dark2 text-sm">{formatDay(data.time)}</Text>
+      </View>
+
+      <Icon name="enter" size={20} color="rgba(255,255,255,0.6)" />
     </View>
   );
 }

@@ -1,12 +1,13 @@
-import eventEmitter from "@/hooks/eventEmitter";
 import { getBrightnessAsync, setBrightnessAsync } from "expo-brightness";
 import { proxy } from "valtio";
 
 type BrightnessStore = {
+  originBrightness: number;
   brightness: number;
 };
 
 export const brightnessStore = proxy<BrightnessStore>({
+  originBrightness: 100,
   brightness: 100,
 });
 
@@ -17,16 +18,19 @@ export const updateBrightness = (delta: number) => {
   );
 
   setBrightnessAsync(brightnessStore.brightness / 100);
+};
 
-  eventEmitter.emit(
-    "tip:show",
-    `亮度：${Math.floor(brightnessStore.brightness)}`
-  );
+//还原
+export const resetBrightness = () => {
+  setBrightnessAsync(brightnessStore.originBrightness / 100);
 };
 
 //初始化
 const init = async () => {
-  brightnessStore.brightness = (await getBrightnessAsync()) * 100;
+  const brightness = (await getBrightnessAsync()) * 100;
+
+  brightnessStore.brightness = brightness;
+  brightnessStore.originBrightness = brightness;
 };
 
 init();

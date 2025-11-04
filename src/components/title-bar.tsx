@@ -1,4 +1,3 @@
-import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { ReactNode } from "react";
 import {
@@ -14,112 +13,115 @@ import Icon from "./icon";
 type Props = {
   title?: string;
   titleShow?: boolean;
-  titleComponent?: ReactNode;
-
-  leftShow?: boolean;
-  leftComponent?: ReactNode;
-
-  rightShow?: boolean;
-  rightComponent?: ReactNode;
-
   blur?: boolean;
-
   style?: StyleProp<ViewStyle>;
+  content?: ReactNode;
+  leftContent?: ReactNode;
+  rightContent?: ReactNode;
+  boxShadow?: boolean;
+
+  minHeight?: number;
+  height?: number;
+  maxHeight?: number;
 };
 
 export default function ({
   title,
   titleShow = true,
-  titleComponent,
+  content,
+  leftContent,
+  rightContent,
+  boxShadow = true,
 
-  leftShow = true,
-  leftComponent,
-
-  rightShow = true,
-  rightComponent,
-
-  blur = true,
+  height = 48,
 }: Props) {
   const { top } = useSafeAreaInsets();
 
   return (
-    <BlurView
-      tint="dark"
-      intensity={blur ? 100 : 0}
-      experimentalBlurMethod="dimezisBlurView"
-      className={`w-screen flex-row flex-center absolute top-0 left-0 z-10 `}
+    <View
+      className={`w-screen z-10`}
       style={[
-        {
-          paddingTop: top,
-          height: 44 + top,
-          backgroundColor: blur ? "rgba(255,255,255,0.05)" : "transparent",
+        boxShadow && {
+          boxShadow: [
+            {
+              offsetX: 0,
+              offsetY: 0,
+              blurRadius: 5,
+              spreadDistance: 5,
+              color: "rgba(0,0,0,0.1)",
+            },
+          ],
         },
       ]}
     >
-      {leftShow && (
-        <View className="h-full flex-row flex-center aspect-square">
-          {leftComponent}
-        </View>
-      )}
+      <View className="shrink-0" style={{ height: top }}></View>
 
-      {titleShow && (
-        <View className="h-full flex-row flex-center flex-1">
-          {titleComponent ? (
-            titleComponent
-          ) : (
-            <Text className="text-main text-xl">{title}</Text>
-          )}
-        </View>
-      )}
+      <View
+        className="flex-row"
+        style={{
+          height,
+        }}
+      >
+        {(leftContent || rightContent) && (
+          <View className="h-full flex-row items-center aspect-square">
+            {leftContent}
+          </View>
+        )}
 
-      {rightShow && (
-        <View className="h-full flex-row flex-center aspect-square">
-          {rightComponent}
+        <View className="flex-1 flex-row flex-center">
+          {titleShow &&
+            (content || <Text className="text-main text-xl">{title}</Text>)}
         </View>
-      )}
-    </BlurView>
+
+        {(leftContent || rightContent) && (
+          <View className="h-full flex-row items-center aspect-square">
+            {rightContent}
+          </View>
+        )}
+      </View>
+    </View>
   );
 }
 
 type BackProps = {
-  blur?: boolean;
+  className?: string;
+  onPress?: () => void;
 };
 
-export function BackControl({ blur }: BackProps) {
-  const onPress = () => {
+export function BackControl({ className, onPress }: BackProps) {
+  const back = () => {
     if (router.canGoBack()) {
       router.back();
     }
   };
 
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+      return;
+    }
+
+    back();
+  };
+
   return (
     <TouchableOpacity
-      className="w-10 h-10 rounded-full border-main-dark3 overflow-hidden"
-      style={{
-        borderWidth: blur ? 1 : 0,
-      }}
-      onPress={onPress}
+      className={`h-full flex-center rounded-full aspect-square ${className}`}
+      onPress={handlePress}
     >
-      <BlurView
-        tint="dark"
-        intensity={blur ? 80 : 0}
-        experimentalBlurMethod="dimezisBlurView"
-        className="flex-1 flex-center"
-      >
-        <Icon
-          name="back"
-          size={18}
-          strokeWidth={0.5}
-          className="translate-x-1/6"
-          style={{
-            transform: [
-              {
-                translateX: "14%",
-              },
-            ],
-          }}
-        />
-      </BlurView>
+      <Icon
+        name="back"
+        size={18}
+        strokeWidth={0.5}
+        className="translate-x-1/6"
+        style={{
+          transform: [
+            {
+              translateX: "14%",
+            },
+          ],
+        }}
+      />
     </TouchableOpacity>
   );
 }

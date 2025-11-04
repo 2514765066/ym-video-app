@@ -1,9 +1,14 @@
-import { Detail_Res_List, Detail_Res, MovieInfo } from "@/type";
-import { formatRemarks } from "@/utils/format";
+import { configState } from "@/store/useConfigStore";
+import {
+  Detail_Res_List,
+  Detail_Res,
+  MovieInfo,
+  List_Res,
+  Category,
+  UpdateInfo,
+} from "@/type";
+import { formatContent, formatRemarks } from "@/utils/format";
 import { request } from "@/utils/request";
-
-//api
-export const API_URL = "https://bfzyapi.com/api.php/provide/vod/";
 
 //处理播放url
 const handlePlayUrl = (url: string) => {
@@ -20,42 +25,50 @@ const handlePlayUrl = (url: string) => {
   });
 };
 
+//处理返回结果
+const handleDetail = (data: Detail_Res_List[]): MovieInfo[] => {
+  return data.map(item => ({
+    name: item.vod_name,
+    content: formatContent(item.vod_content),
+    id: `${configState.sourceName},${item.vod_id}`,
+    pic: item.vod_pic,
+    year: item.vod_year,
+    area: item.vod_area,
+    lang: item.vod_lang,
+    type: item.type_name,
+    url: handlePlayUrl(item.vod_play_url),
+    remarks: item.vod_remarks,
+    source: configState.sourceName,
+  }));
+};
+
+//处理返回结果
+const handleUpdate = (data: Detail_Res_List[]): UpdateInfo[] => {
+  return data.map(item => ({
+    id: `${configState.sourceName},${item.vod_id}`,
+    remarks: item.vod_remarks,
+    url: handlePlayUrl(item.vod_play_url),
+  }));
+};
+
 interface RecommendOption {
   tid: string | number;
   page?: number;
 }
 
-const handleResult = (res: Detail_Res_List[]): MovieInfo[] => {
-  return res
-    .filter(item => item.type_name != "电影解说" && item.type_name != "预告片")
-    .map(item => {
-      return {
-        name: item.vod_name,
-        sub: item.vod_content,
-        id: `${item.vod_play_from},${item.vod_id}`,
-        pic: item.vod_pic,
-        year: item.vod_year,
-        area: item.vod_area,
-        lang: item.vod_lang,
-        type: item.type_name,
-        url: handlePlayUrl(item.vod_play_url),
-        remarks: item.vod_remarks,
-        score: item.vod_douban_score,
-      };
-    });
-};
-
-//推荐
-export const getRecommend = async ({ tid, page = 1 }: RecommendOption) => {
+//获取影视
+export const getMovie = async ({ tid, page = 1 }: RecommendOption) => {
   //获取基本信息
-  const { list, pagecount } = await request<Detail_Res>(API_URL, {
-    ac: "detail",
-    t: tid,
-    pg: page,
+  const { list, pagecount } = await request<Detail_Res>({
+    query: {
+      ac: "detail",
+      t: tid,
+      pg: page,
+    },
   });
 
   return {
-    data: handleResult(list),
+    data: handleDetail(list),
     pageCount: pagecount,
   };
 };
@@ -67,13 +80,15 @@ interface SearchOption {
 
 //搜索
 export const getSearch = async ({ keyword, page }: SearchOption) => {
-  const { list, pagecount } = await request<Detail_Res>(API_URL, {
-    ac: "detail",
-    pg: page,
-    wd: keyword,
+  const { list, pagecount } = await request<Detail_Res>({
+    query: {
+      ac: "detail",
+      pg: page,
+      wd: keyword,
+    },
   });
 
-  const res = handleResult(list);
+  const res = handleDetail(list);
 
   return {
     data: res,
@@ -81,15 +96,18 @@ export const getSearch = async ({ keyword, page }: SearchOption) => {
   };
 };
 
-//更新选集
-export const getDetail = async (ids: string[]) => {
+//获取更新状态
+export const getUpdate = async (source: string, ids: string[]) => {
   const res: Detail_Res_List[] = [];
 
   const _getEpisode = async (page: number = 1) => {
-    const { list, pagecount } = await request<Detail_Res>(API_URL, {
-      ac: "detail",
-      ids: ids.join(","),
-      pg: page,
+    const { list, pagecount } = await request<Detail_Res>({
+      url: source,
+      query: {
+        ac: "detail",
+        ids: ids.join(","),
+        pg: page,
+      },
     });
 
     res.push(...list);
@@ -103,5 +121,51 @@ export const getDetail = async (ids: string[]) => {
 
   await _getEpisode();
 
-  return handleResult(res);
+  return handleUpdate(res);
+};
+
+//获取分类
+export const getCategory = async () => {
+  const res = await request<List_Res>();
+
+  const category = new Map<number, Category>();
+
+  const childCategory = new Map<number, Category[]>();
+
+  for (const item of res.class) {
+    //分类
+    if (item.type_pid == 0) {
+      category.set(item.type_id, {
+        label: item.type_name,
+        id: item.type_id,
+      });
+    }
+
+    if (!childCategory.has(item.type_pid)) {
+      childCategory.set(item.type_pid, []);
+    }
+
+    childCategory.get(item.type_pid)!.push({
+      label: item.type_name,
+      id: item.type_id,
+    });
+  }
+
+  return {
+    firstID: res.class[0].type_id,
+    category,
+    childCategory,
+  };
+};
+
+//获取最近更新
+export const getLast = async () => {
+  //获取基本信息
+  const { list } = await request<Detail_Res>({
+    query: {
+      ac: "detail",
+    },
+  });
+
+  return handleDetail(list);
 };

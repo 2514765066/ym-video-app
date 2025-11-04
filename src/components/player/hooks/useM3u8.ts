@@ -1,5 +1,5 @@
+import { Paths, File } from "expo-file-system";
 import { DependencyList, useEffect, useState } from "react";
-import RNFS from "react-native-fs";
 
 // 去广告 m3u8 解析
 const filterAd = (m3u8Content: string) => {
@@ -31,11 +31,11 @@ const resolveTSUrls = (m3u8Text: string, m3u8Url: string) => {
 
 //文本存储本地
 const textToUrl = async (text: string) => {
-  const localPath = RNFS.CachesDirectoryPath + "/cache.m3u8";
+  const file = new File(Paths.cache, "cache.m3u8");
 
-  await RNFS.writeFile(localPath, text, "utf8");
+  file.write(text, { encoding: "utf8" });
 
-  return `file://${localPath}?t=${Date.now()}`;
+  return `${file.uri}?t=${Date.now()}`;
 };
 
 //获取播放源

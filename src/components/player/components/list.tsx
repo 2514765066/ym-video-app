@@ -13,6 +13,8 @@ import { historyState } from "@/store/useHistoryStore";
 import { Episode } from "@/type";
 import useEpisode from "@/hooks/useEpisode";
 
+const COUNT = 30;
+
 export default function () {
   const [visible, setVisible] = useState(false);
 
@@ -54,9 +56,10 @@ function List() {
 
   const episodeRef = useRef<FlatList>(null);
 
-  const { COUNT, pageList, itemWidth, page, setPage, EpisodeItem } = useEpisode(
+  const { pageList, itemWidth, page, setPage, EpisodeItem } = useEpisode(
     selectedHistory.history,
-    selectedHistory.url.length
+    selectedHistory.url.length,
+    COUNT
   );
 
   const handleLayout = () => {
@@ -69,17 +72,21 @@ function List() {
   return (
     <View className="w-1/2 h-full pt-6 gap-2">
       <FlatList
-        className="flex-grow-0"
-        contentContainerClassName="gap-4"
+        className=" shrink-0"
+        contentContainerStyle={{
+          gap: 16,
+        }}
         ref={episodeRef}
         data={pageList}
         keyExtractor={item => String(item.value)}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => setPage(item.value)}>
-            <EpisodeItem active={item.value == page} label={item.label} />
-          </TouchableOpacity>
+          <EpisodeItem
+            active={item.value == page}
+            label={item.label}
+            onPress={() => setPage(item.value)}
+          />
         )}
         getItemLayout={(_, index) => ({
           length: itemWidth,
@@ -90,7 +97,7 @@ function List() {
       />
 
       <FlatList
-        numColumns={2}
+        numColumns={3}
         contentContainerClassName="py-2 gap-1.5"
         columnWrapperClassName="gap-1.5"
         showsVerticalScrollIndicator={false}

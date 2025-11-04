@@ -6,13 +6,11 @@
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "ymvideo",
-    "userInterfaceStyle": "automatic",
-    "ios": {
-      "supportsTablet": true
-    },
+    "backgroundColor": "#191919",
     "android": {
       "edgeToEdgeEnabled": true,
-      "package": "com.zhangmingyang.ymvideo"
+      "package": "com.zhangmingyang.ymvideo",
+      "jsEngine": "hermes"
     },
     "plugins": [
       "expo-router",
@@ -25,27 +23,9 @@
           "backgroundColor": "#191919"
         }
       ],
-      [
-        "expo-screen-orientation",
-        {
-          "initialOrientation": "DEFAULT"
-        }
-      ],
-      [
-        "react-native-edge-to-edge",
-        {
-          "android": {
-            "parentTheme": "Default",
-            "enforceNavigationBarContrast": false
-          }
-        }
-      ],
-      [
-        "react-native-video",
-        {
-          "enableAndroidPictureInPicture": true
-        }
-      ],
+      "expo-screen-orientation",
+      "react-native-edge-to-edge",
+      "react-native-video",
       "expo-sqlite"
     ],
     "experiments": {

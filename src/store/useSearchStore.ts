@@ -1,75 +1,71 @@
-import { getSearch } from "@/services/api";
-import { MovieInfo } from "@/type";
+import storage from "@/services/storage";
+import { KeywordHistory } from "@/type";
 import { proxy } from "valtio";
+import { proxyMap } from "valtio/utils";
 
 type MovieStore = {
-  keyword: string;
-  data: MovieInfo[];
-  page: number;
-  pageCount: number;
-  loading: boolean;
+  data: Map<string, KeywordHistory>;
+
+  selectedKeyword: string;
 };
 
 //仓库
 export const searchState = proxy<MovieStore>({
-  //搜索关键词
-  keyword: "",
+  //搜索历史
+  data: proxyMap(),
 
-  //搜索数据
-  data: [],
-
-  //当前页
-  page: 0,
-
-  //总共页数
-  pageCount: 1,
-
-  //是否加载
-  loading: false,
+  //当前选中的搜索历史
+  selectedKeyword: "",
 });
 
-//获取数据
-const getData = async () => {
-  const res = await getSearch({
-    keyword: searchState.keyword,
-    page: searchState.page + 1,
+//保存
+const save = () => {
+  const data = JSON.stringify(Array.from(searchState.data));
+
+  storage.setItem("search-history", data);
+};
+
+//添加搜索历史
+export const add = (keyword: string) => {
+  if (searchState.data.has(keyword)) {
+    return;
+  }
+
+  searchState.data.set(keyword, {
+    label: keyword,
+    time: Date.now(),
   });
 
-  searchState.page++;
-
-  return res;
+  save();
 };
 
-//搜索
-export const search = async (keyword: string) => {
-  searchState.loading = true;
-
-  searchState.keyword = keyword;
-
-  searchState.page = 0;
-
-  const { data, pageCount } = await getData();
-
-  searchState.data = data;
-
-  searchState.pageCount = pageCount;
-
-  setTimeout(() => {
-    searchState.loading = false;
-  }, 0);
+//更新时间
+export const updateTime = (keyword: string) => {
+  searchState.data.get(keyword)!.time = Date.now();
 };
 
-//加载更多数据
-export const loadData = async () => {
-  if (searchState.data.length == 0) {
+//删除搜索历史
+export const remove = (keyword: string) => {
+  if (!searchState.data.has(keyword)) {
     return;
   }
 
-  if (searchState.page == searchState.pageCount) {
-    return;
-  }
+  searchState.data.delete(keyword);
 
-  const { data } = await getData();
-
-  searchState.data.push(...data);
+  save();
 };
+
+//清空历史记录
+export const clear = () => {
+  searchState.data.clear();
+};
+
+const init = () => {
+  const res = storage.getItem("search-history");
+
+  if (res) {
+    searchState.data = proxyMap(JSON.parse(res));
+  }
+};
+
+init();

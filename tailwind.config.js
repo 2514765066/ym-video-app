@@ -7,6 +7,9 @@ module.exports = {
     extend: {
       colors: {
         "main": "rgba(255,255,255,0.8)",
+
+        "sub": "#888",
+
         "main-dark1": "rgba(255,255,255,0.6)",
         "main-dark2": "rgba(255,255,255,0.3)",
         "main-dark3": "rgba(255, 255, 255, 0.03)",
@@ -15,6 +18,8 @@ module.exports = {
         "222": "#222",
         "333": "#333",
         "444": "#444",
+
+        "bg-sub": "#292929",
       },
       aspectRatio: {
         "2/3": "2/3",

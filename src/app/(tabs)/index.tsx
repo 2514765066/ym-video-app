@@ -1,249 +1,160 @@
+import HistoryCard from "@/components/card/history-card";
 import MovieList from "@/components/card/movie-list";
-import TopCard from "@/components/card/top-card";
 import Icon from "@/components/icon";
-import SearchBar from "@/components/search-bar";
-import Skeleton from "@/components/skeleton";
+import { Loading } from "@/components/loading";
 import TitleBar from "@/components/title-bar";
-import useLoading from "@/hooks/useLoading";
-import { useScrollTop } from "@/hooks/useScrollTop";
-import {
-  categories,
-  changeCategory,
-  changeChildCategory,
-  loadCategoryData,
-  movieState,
-} from "@/store/useMovieStore";
+import { historyState } from "@/store/useHistoryStore";
+import { latestMovieState } from "@/store/useLatestMovieStore";
 import { MovieInfo } from "@/type";
+import { getTimePeriod } from "@/utils/time";
+import { router } from "expo-router";
 import { useMemo } from "react";
-import {
-  Dimensions,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import Carousel from "react-native-reanimated-carousel";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 import { useSnapshot } from "valtio";
 
-const { width } = Dimensions.get("window");
+const Height = 50;
 
 export default function () {
-  const { isTop, onScroll } = useScrollTop();
+  const scrollY = useSharedValue(0);
 
-  return (
-    <SafeAreaView className="flex-1 bg-bg">
-      <TitleBar blur={!isTop} titleComponent={<Title />} />
-
-      <Content onScroll={onScroll} />
-    </SafeAreaView>
-  );
-}
-
-function Title() {
-  const { selectedCategory } = useSnapshot(movieState);
-
-  const handlePress = (index: number) => {
-    if (index == selectedCategory) {
-      return;
-    }
-
-    changeCategory(index);
-  };
-
-  return (
-    <View className="flex-row items-center gap-4">
-      {categories.map((item, index) => (
-        <CategoryItem
-          key={item.id}
-          label={item.label}
-          active={index == selectedCategory}
-          onPress={() => handlePress(index)}
-        />
-      ))}
-    </View>
-  );
-}
-
-function Header() {
-  const { selectedCategory, selectedChildCategory } = useSnapshot(movieState);
-
-  const childCategory = useMemo(() => {
-    return categories[selectedCategory].children;
-  }, [selectedCategory]);
-
-  const handlePress = (index: number) => {
-    if (index == selectedChildCategory) {
-      return;
-    }
-
-    changeChildCategory(index);
-  };
-
-  return (
-    <View>
-      <Banner />
-
-      {/* <ScrollView
-        horizontal={true}
-        contentContainerClassName="px-4 py-1 gap-4"
-        showsHorizontalScrollIndicator={false}
-      >
-        {childCategory.map((item, index) => (
-          <Item
-            key={item.id}
-            small={true}
-            label={item.label}
-            active={index == selectedChildCategory}
-            onPress={() => handlePress(index)}
-          />
-        ))}
-      </ScrollView> */}
-    </View>
-  );
-}
-
-function Banner() {
-  const { loading, data } = useSnapshot(movieState);
-
-  if (loading) {
-    return (
-      <View
-        className="flex-row rounded-xl aspect-3/2"
-        style={{
-          width,
-        }}
-      >
-        <View className="flex-1 p-5 pr-1 gap-4">
-          <Skeleton className="w-3/4 h-5 mb-4" />
-
-          <Skeleton className="w-full h-5" />
-
-          <Skeleton className="w-full h-5" />
-
-          <Skeleton className="w-1/2 h-5" />
-
-          <Skeleton className="w-1/3 h-5 mt-auto" />
-        </View>
-
-        <View className="flex-1 p-4">
-          <Skeleton className="wh-full" />
-        </View>
-      </View>
+  const animatedTextStyle = useAnimatedStyle(() => {
+    const scale = interpolate(
+      scrollY.value,
+      [0, Height],
+      [1.5, 1],
+      Extrapolation.CLAMP
     );
+
+    const translateX = -((1 - scale) * 110) / 2;
+    const translateY = -((1 - scale) * Height * 1.5);
+
+    return {
+      transform: [{ translateX }, { translateY }, { scale }],
+    };
+  });
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: event => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  const toSearch = () => {
+    router.push("/search");
+  };
+
+  return (
+    <View className="flex-1 bg-bg">
+      <TitleBar
+        boxShadow={false}
+        content={
+          <View className="pl-4 flex-1 flex-row items-center">
+            <Animated.Text
+              className="text-main font-bold text-xl"
+              style={animatedTextStyle}
+            >
+              Hi，{getTimePeriod()}好 😊
+            </Animated.Text>
+
+            <TouchableOpacity
+              className="h-full ml-auto flex-center aspect-square"
+              onPress={toSearch}
+            >
+              <Icon name="search" size={26} />
+            </TouchableOpacity>
+          </View>
+        }
+      />
+
+      <Animated.ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          paddingTop: Height,
+        }}
+        contentContainerClassName="min-h-screen gap-8"
+        showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}
+      >
+        <HistoryContent />
+
+        <LastContent />
+      </Animated.ScrollView>
+    </View>
+  );
+}
+
+function HistoryContent() {
+  const { data } = useSnapshot(historyState);
+
+  const renderData = useMemo(() => {
+    return Array.from(data.values())
+      .sort((a, b) => b.time - a.time)
+      .slice(0, 5);
+  }, [data]);
+
+  return (
+    <View className="gap-4">
+      <Text className="px-4 text-main text-lg font-bold">最近观看</Text>
+
+      <FlatList
+        contentContainerClassName="px-4 gap-3"
+        data={renderData}
+        keyExtractor={item => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => {
+          return <HistoryCard data={item} />;
+        }}
+      />
+    </View>
+  );
+}
+
+function LastContent() {
+  const { data } = useSnapshot(latestMovieState);
+
+  if (data.length == 0) {
+    return <Loading />;
   }
 
   return (
-    <Carousel
-      width={width}
-      height={(width / 3) * 2}
-      data={data.slice(0, 3)}
-      autoPlay={true}
-      autoPlayInterval={2000}
-      mode="parallax"
-      modeConfig={{
-        parallaxScrollingScale: 0.9,
-        parallaxAdjacentItemScale: 0.9,
-        parallaxScrollingOffset: width * 0.1 - 10,
-      }}
-      renderItem={({ item }) => <TopCard data={item as MovieInfo} />}
-    />
-  );
-}
+    <View className="px-4 gap-4">
+      <Text className="text-main text-lg font-bold">最近更新</Text>
 
-type ContentProps = {
-  onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
-};
-
-function Content({ onScroll }: ContentProps) {
-  const { data, loading } = useSnapshot(movieState);
-
-  //加载更多数据
-  const loadMoreData = useLoading(loadCategoryData);
-
-  return (
-    <FlatList
-      contentContainerClassName="pt-11 pb-14 gap-4"
-      data={loading ? [] : data.slice(3)}
-      removeClippedSubviews={true}
-      keyExtractor={(item, index) => item.name + index}
-      showsVerticalScrollIndicator={false}
-      renderItem={({ item }) => (
-        <View className="px-4">
-          <MovieList data={item as MovieInfo} />
-        </View>
-      )}
-      ListHeaderComponent={Header}
-      ListFooterComponent={Footer}
-      onScroll={onScroll}
-      onEndReached={loadMoreData}
-    />
-  );
-}
-
-function Footer() {
-  const { page, pageCount } = useSnapshot(movieState);
-
-  return (
-    <View className="py-2 flex-center">
-      {page == pageCount ? (
-        <Text className="text-main-dark2 text-xl">到底了~</Text>
-      ) : (
-        <Loading />
-      )}
+      <FlatList
+        contentContainerClassName="pb-4 gap-4"
+        data={data}
+        keyExtractor={(item, index) => item.name + index}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => <MovieList data={item as MovieInfo} />}
+        scrollEnabled={false}
+        ListFooterComponent={LastContentFooter}
+      />
     </View>
   );
 }
 
-type ItemProps = {
-  active?: boolean;
-  label?: string;
-  small?: boolean;
-  onPress: () => void;
-};
+function LastContentFooter() {
+  const toCategory = () => {
+    router.push("/category");
+  };
 
-function CategoryItem({ active, label, small, onPress }: ItemProps) {
   return (
-    <TouchableOpacity className="pb-1 items-center relative" onPress={onPress}>
-      <Text
-        className={`${small ? "text-lg" : "text-xl"} ${active ? "text-main" : "text-main-dark2"}`}
+    <View className="flex-row flex-center">
+      <TouchableOpacity
+        className="px-4 py-2 bg-222 rounded-xl"
+        onPress={toCategory}
       >
-        {label}
-      </Text>
-
-      <View
-        className={`w-1/2 h-0.5  rounded-full absolute bottom-0 ${active ? "bg-main" : "transparent"}`}
-      />
-    </TouchableOpacity>
-  );
-}
-
-function Loading() {
-  return (
-    <View className="flex-center">
-      <Icon
-        name="loading"
-        size={35}
-        color="rgba(255,255,255,0.3)"
-        style={{
-          animationDuration: 1000,
-          animationIterationCount: "infinite",
-          animationTimingFunction: "linear",
-          animationName: {
-            0: {
-              transform: [{ rotate: "0deg" }],
-            },
-            "50%": {
-              transform: [{ rotate: "180deg" }],
-            },
-            "100%": {
-              transform: [{ rotate: "360deg" }],
-            },
-          },
-        }}
-      />
+        <Text className="text-main">查看更多</Text>
+      </TouchableOpacity>
     </View>
   );
 }
