@@ -10,7 +10,7 @@ import {
 import { KeywordHistory } from "@/type";
 import { formatDay } from "@/utils/format";
 import { createRef, useMemo } from "react";
-import { FlatList, TouchableOpacity, View, Text } from "react-native";
+import { FlatList, TouchableOpacity, View, Text, Keyboard } from "react-native";
 import { useSnapshot } from "valtio";
 import { BottomSheetHandle } from "@/components/bottom-sheet";
 import BottomSheetMenu, {
@@ -27,8 +27,19 @@ const bottomSheetRef = createRef<BottomSheetHandle>();
 
 const searchBarRef = createRef<SearchBarHandle>();
 
+//搜索
+const search = (keyword: string) => {
+  searchData(keyword);
+
+  updateTime(keyword);
+
+  router.push("/search-result");
+};
+
 export default function () {
   const handleMore = () => {
+    Keyboard.dismiss();
+
     bottomSheetRef.current?.open();
   };
 
@@ -83,11 +94,7 @@ export default function () {
               onPress(keyword: string) {
                 moreRef.current?.close();
 
-                searchData(keyword);
-
-                updateTime(keyword);
-
-                router.push("/search-result");
+                search(keyword);
               },
             },
           ],
@@ -100,9 +107,9 @@ export default function () {
                 color: "#f87171",
               },
               onPress(keyword: string) {
-                remove(keyword);
-
                 moreRef.current?.close();
+
+                remove(keyword);
               },
             },
           ],
@@ -141,14 +148,6 @@ function Content() {
     return Array.from(data.values()).sort((a, b) => b.time - a.time);
   }, [data]);
 
-  const handleSearch = (keyword: string) => {
-    searchData(keyword);
-
-    updateTime(keyword);
-
-    router.push("/search-result");
-  };
-
   const handleMore = (keyword: string) => {
     moreRef.current?.open(keyword);
   };
@@ -167,7 +166,7 @@ function Content() {
         return (
           <TouchableOpacity
             className="px-1"
-            onPress={() => handleSearch(item.label)}
+            onPress={() => search(item.label)}
             onLongPress={() => handleMore(item.label)}
             delayLongPress={200}
           >
