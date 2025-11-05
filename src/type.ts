@@ -35,6 +35,7 @@ export type Detail_Res_List = {
   vod_remarks: string;
   vod_play_from: string;
   vod_douban_score: string;
+  vod_play_note: string;
 };
 
 //选集

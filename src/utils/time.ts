@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 //获取当前时间
 export const getTimePeriod = () => {
@@ -16,11 +16,19 @@ export const getTimePeriod = () => {
 };
 
 //获取时间差
+export const getTimeDiff = (start: number | Dayjs, end: number | Dayjs) => {
+  const d1 = dayjs(start);
+  const d2 = dayjs(end);
+
+  return d2.diff(d1, "day", true); // true 表示保留小数
+};
+
+//获取时间差标题
 export const getTimeDiffLabel = (start: number | Date, end: number | Date) => {
   const d1 = dayjs(start);
   const d2 = dayjs(end);
 
-  const diffDays = d2.diff(d1, "day", true); // true 表示保留小数
+  const diffDays = getTimeDiff(d1, d2);
 
   if (diffDays >= 1) {
     return `${Math.floor(diffDays)}天`;

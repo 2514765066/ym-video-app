@@ -1,15 +1,16 @@
 import Img from "@/components/img";
 import TitleBar from "@/components/title-bar";
-import { View, ImageBackground, Text } from "react-native";
+import { View, ImageBackground } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { router } from "expo-router";
 import { Group, GroupItem } from "@/components/setting-group";
 import { useSnapshot } from "valtio";
-import { useState } from "react";
+import { useMemo } from "react";
 import { appVersion } from "@/services/info";
 import { checkUpdate, download, updateState } from "@/store/useUpdateStore";
 import { getTimeDiffLabel } from "@/utils/time";
 import { configState } from "@/store/useConfigStore";
+import useLoading from "@/hooks/useLoading";
 
 export default function () {
   return (
@@ -20,8 +21,6 @@ export default function () {
         contentContainerClassName="p-4 gap-4"
         showsVerticalScrollIndicator={false}
       >
-        <UpdateProgress />
-
         <Header />
 
         <Group data={[<SourceOption />, <GeneralOption />]} />
@@ -75,32 +74,60 @@ function GeneralOption() {
 }
 
 function UpdateOption() {
-  const { lastUpdateTime } = useSnapshot(updateState);
-  const [sub, setSub] = useState(
-    `${getTimeDiffLabel(lastUpdateTime, Date.now())}前检查过`
-  );
+  const {
+    lastUpdateTime,
+    updateStatus,
+    downloadStatus,
+    updateProgress,
+    installStatus,
+  } = useSnapshot(updateState);
 
-  const handlePress = async () => {
-    setSub("正在检查更新");
-
+  const handleUpdate = useLoading(async () => {
     const res = await checkUpdate();
 
     if (!res) {
-      setSub("已是最新版");
       return;
     }
 
-    setSub("更新中");
-
     await download();
-  };
+  });
+
+  const subLabel = useMemo(() => {
+    if (downloadStatus === "downloading") {
+      return `下载中: ${updateProgress}%`;
+    }
+
+    const updateMap: Record<string, string> = {
+      checking: "正在检查更新",
+      "update-not-available": "已是最新版",
+    };
+
+    if (updateMap[updateStatus]) return updateMap[updateStatus];
+
+    const downloadMap: Record<string, string> = {
+      downloaded: "正在安装",
+      failed: "下载失败",
+    };
+
+    if (downloadMap[downloadStatus]) return downloadMap[downloadStatus];
+
+    if (installStatus === "canceled") return "点击安装";
+
+    return `${getTimeDiffLabel(lastUpdateTime, Date.now())}前检查过`;
+  }, [
+    updateStatus,
+    downloadStatus,
+    installStatus,
+    lastUpdateTime,
+    updateProgress,
+  ]);
 
   return (
     <GroupItem
       label="检查更新"
       icon="update"
-      sub={sub}
-      onPress={handlePress}
+      sub={subLabel}
+      onPress={handleUpdate}
       rightVisible={true}
     />
   );
@@ -114,28 +141,6 @@ function AboutOption() {
       sub={`v${appVersion}`}
       rightVisible={true}
       onPress={() => router.push("/settings/about")}
-    />
-  );
-}
-
-function UpdateProgress() {
-  const { updateInfo, updateProgress, isUpdate } = useSnapshot(updateState);
-
-  if (!isUpdate) {
-    return null;
-  }
-
-  return (
-    <Group
-      data={[
-        <View className="px-4 flex-1 flex-row justify-between items-center">
-          <Text className="text-main text-lg">
-            🎉 发现新版本v{updateInfo.version}
-          </Text>
-
-          <Text className="text-sub">{updateProgress}%</Text>
-        </View>,
-      ]}
     />
   );
 }

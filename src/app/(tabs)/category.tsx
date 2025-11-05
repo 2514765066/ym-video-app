@@ -103,33 +103,30 @@ function Header() {
 }
 
 function Content() {
-  const { data, status } = useSnapshot(movieState);
+  const { data } = useSnapshot(movieState);
 
   const handleEnd = useLoading(loadData);
 
   return (
-    <>
-      {status == "loading" && data.length == 0 && <LoadingGlobal />}
-
-      <FlatList
-        contentContainerClassName="py-4 gap-4"
-        data={data}
-        keyExtractor={(item, index) => item.id + index}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View className="px-4">
-            <MovieList data={item as MovieInfo} />
-          </View>
-        )}
-        ListHeaderComponent={Header}
-        ListFooterComponent={Footer}
-        onEndReached={handleEnd}
-        initialNumToRender={4}
-        maxToRenderPerBatch={4}
-        updateCellsBatchingPeriod={100}
-        windowSize={4}
-      />
-    </>
+    <FlatList
+      contentContainerClassName="py-4 gap-4"
+      data={data}
+      keyExtractor={(item, index) => item.id + index}
+      showsVerticalScrollIndicator={false}
+      renderItem={({ item }) => (
+        <View className="px-4">
+          <MovieList data={item as MovieInfo} />
+        </View>
+      )}
+      ListHeaderComponent={Header}
+      ListFooterComponent={Footer}
+      ListEmptyComponent={LoadingGlobal}
+      onEndReached={handleEnd}
+      initialNumToRender={4}
+      maxToRenderPerBatch={4}
+      updateCellsBatchingPeriod={100}
+      windowSize={4}
+    />
   );
 }
 

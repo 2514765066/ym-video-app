@@ -1,15 +1,19 @@
-export default function <T extends Array<any>>(fn: (...args: T) => void) {
-  let loading = false;
+import { useRef } from "react";
 
-  return function (...args: T) {
-    if (loading) {
-      return;
+export default function <T extends any[]>(
+  fn: (...args: T) => Promise<void> | void
+) {
+  const loading = useRef(false);
+
+  return async function (...args: T) {
+    if (loading.current) return;
+
+    loading.current = true;
+
+    try {
+      await fn(...args);
+    } finally {
+      loading.current = false;
     }
-
-    loading = true;
-
-    fn(...args);
-
-    loading = false;
   };
 }

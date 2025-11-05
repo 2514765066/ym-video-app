@@ -22,10 +22,6 @@ export const sources = [
     value: "http://cj.rycjapi.com/api.php/provide/vod",
   },
   {
-    label: "360资源",
-    value: "https://360zy.com/api.php/provide/vod",
-  },
-  {
     label: "茅台资源",
     value: "https://caiji.maotaizy.cc/api.php/provide/vod",
   },

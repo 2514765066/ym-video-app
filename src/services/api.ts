@@ -11,18 +11,27 @@ import { formatContent, formatRemarks } from "@/utils/format";
 import { request } from "@/utils/request";
 
 //处理播放url
-const handlePlayUrl = (url: string) => {
-  return url.split("#").map((item, index) => {
-    const [label, url] = item.split("$");
+const handlePlayUrl = (playUrl: string, playNote: string) => {
+  let urls = playUrl;
 
-    return {
-      label: formatRemarks(label),
-      value: index,
-      url,
-      duration: 0,
-      currentTime: 0,
-    };
-  });
+  if (playNote) {
+    urls = playUrl.split(playNote).filter(item => item.includes("m3u8"))[0];
+  }
+
+  return urls
+    .split("#")
+    .filter(item => item.endsWith(".m3u8"))
+    .map((item, index) => {
+      const [label, url] = item.split("$");
+
+      return {
+        label: formatRemarks(label),
+        value: index,
+        url,
+        duration: 0,
+        currentTime: 0,
+      };
+    });
 };
 
 //处理返回结果
@@ -36,7 +45,7 @@ const handleDetail = (data: Detail_Res_List[]): MovieInfo[] => {
     area: item.vod_area,
     lang: item.vod_lang,
     type: item.type_name,
-    url: handlePlayUrl(item.vod_play_url),
+    url: handlePlayUrl(item.vod_play_url, item.vod_play_note),
     remarks: item.vod_remarks,
     source: configState.sourceName,
   }));
@@ -47,7 +56,11 @@ const handleUpdate = (data: Detail_Res_List[]): UpdateInfo[] => {
   return data.map(item => ({
     id: `${configState.sourceName},${item.vod_id}`,
     remarks: item.vod_remarks,
-    url: handlePlayUrl(item.vod_play_url),
+    url: handlePlayUrl(
+      item.vod_play_url,
+
+      item.vod_play_note
+    ),
   }));
 };
 

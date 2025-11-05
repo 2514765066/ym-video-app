@@ -1,11 +1,16 @@
 import { appVersion, appName } from "@/services/info";
 import { formatVersion } from "@/utils/format";
 import { Paths, File } from "expo-file-system";
-import { createDownloadResumable } from "expo-file-system/legacy";
+import {
+  createDownloadResumable,
+  deleteAsync,
+  getContentUriAsync,
+} from "expo-file-system/legacy";
 import { proxy } from "valtio";
 import { startActivityAsync } from "expo-intent-launcher";
 import storage from "@/services/storage";
 import { configState } from "./useConfigStore";
+import { getTimeDiff } from "@/utils/time";
 
 //更新源
 const RELEASES_URL =
@@ -14,12 +19,31 @@ const RELEASES_URL =
 //最新版本
 const LATEST_URL = `${RELEASES_URL}/latest`;
 
-export const updateState = proxy({
-  //上次检测时间
-  lastUpdateTime: 1762180172278,
+type UpdateState = {
+  lastUpdateTime: number;
 
-  //是否更新
-  isUpdate: false,
+  updateProgress: number;
+
+  updateInfo: {
+    version: string;
+    downloadUrl: string;
+    md5: string;
+  };
+
+  updateStatus:
+    | "init"
+    | "checking"
+    | "update-available"
+    | "update-not-available";
+
+  downloadStatus: "init" | "downloading" | "downloaded" | "failed";
+
+  installStatus: "init" | "canceled" | "success";
+};
+
+export const updateState = proxy<UpdateState>({
+  //上次检测时间
+  lastUpdateTime: 0,
 
   //更新进度
   updateProgress: 0,
@@ -28,7 +52,17 @@ export const updateState = proxy({
   updateInfo: {
     version: "",
     downloadUrl: "",
+    md5: "",
   },
+
+  //更新状态
+  updateStatus: "init",
+
+  //下载状态
+  downloadStatus: "init",
+
+  //安装状态
+  installStatus: "init",
 });
 
 interface UpdateInfo {
@@ -40,13 +74,27 @@ interface UpdateInfo {
   tag_name: string;
 }
 
+interface UpdateConfig {
+  md5: string;
+}
+
+//获取配置
+const getJson = async (url: string) => {
+  const response = await fetch(url);
+
+  return await response.json();
+};
+
 //检查更新
 export const checkUpdate = async () => {
+  updateState.updateStatus = "checking";
+
   save();
 
   const response = await fetch(LATEST_URL);
 
-  if (response.status == 404) {
+  if (response.status != 200) {
+    updateState.updateStatus = "update-not-available";
     return;
   }
 
@@ -54,33 +102,58 @@ export const checkUpdate = async () => {
 
   //不需要更新
   if (formatVersion(appVersion) >= formatVersion(updateInfo.name)) {
-    updateState.isUpdate = false;
+    updateState.updateStatus = "update-not-available";
     return;
   }
+
+  //找到对应的配置信息
+  const latestConfig = updateInfo.assets.find(
+    item => item.name == "latest.json"
+  );
 
   //找到对应的安装包
   const latestInfo = updateInfo.assets.find(
     item => item.name == `${appName}-${updateInfo.name}.apk`
   );
 
-  if (!latestInfo) {
-    updateState.isUpdate = false;
+  if (!latestInfo || !latestConfig) {
+    updateState.updateStatus = "update-not-available";
     return;
   }
+
+  const { md5 }: UpdateConfig = await getJson(
+    latestConfig.browser_download_url
+  );
 
   updateState.updateInfo = {
     version: updateInfo.name,
     downloadUrl: latestInfo.browser_download_url,
+    md5,
   };
 
-  updateState.isUpdate = true;
+  updateState.updateStatus = "update-available";
 
   return true;
 };
 
 //下载
 export const download = async () => {
-  const file = new File(Paths.cache, `${appName}-latest.apk`);
+  updateState.downloadStatus = "downloading";
+
+  const pathname = updateState.updateInfo.downloadUrl.split("/").at(-1)!;
+
+  const file = new File(Paths.cache, pathname);
+
+  if (file.md5 == updateState.updateInfo.md5) {
+    updateState.downloadStatus = "downloaded";
+
+    install(file.uri);
+    return;
+  }
+
+  if (file.exists) {
+    await deleteAsync(file.uri);
+  }
 
   const downloadResumable = createDownloadResumable(
     updateState.updateInfo.downloadUrl,
@@ -98,17 +171,37 @@ export const download = async () => {
   const res = await downloadResumable.downloadAsync();
 
   if (res?.status == 200) {
-    setup(res.uri);
+    updateState.downloadStatus = "downloaded";
+
+    install(res.uri);
+    return;
   }
+
+  updateState.downloadStatus = "failed";
 };
 
 //安装
-export const setup = async (url: string) => {
-  await startActivityAsync("android.intent.action.VIEW", {
-    data: url,
-    type: "application/vnd.android.package-archive",
-    flags: 1,
-  });
+export const install = async (uri: string) => {
+  const contentUri = await getContentUriAsync(uri);
+
+  const intentLauncherResult = await startActivityAsync(
+    "android.intent.action.VIEW",
+    {
+      data: contentUri,
+      flags: 1,
+      type: "application/vnd.android.package-archive",
+    }
+  );
+
+  if (intentLauncherResult.resultCode == 0) {
+    updateState.installStatus = "canceled";
+    return;
+  }
+
+  if (intentLauncherResult.resultCode == -1) {
+    updateState.installStatus = "success";
+    return;
+  }
 };
 
 //保存
@@ -129,7 +222,9 @@ const init = () => {
   }
 
   if (configState.autoUpdate) {
-    checkUpdate();
+    if (getTimeDiff(updateState.lastUpdateTime, Date.now()) > 3) {
+      checkUpdate();
+    }
   }
 };
 
