@@ -46,6 +46,10 @@ export const checkUpdate = async () => {
 
   const response = await fetch(LATEST_URL);
 
+  if (response.status == 404) {
+    return;
+  }
+
   const updateInfo: UpdateInfo = await response.json();
 
   //不需要更新

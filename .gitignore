@@ -28,3 +28,6 @@ scripts
 
 # nativewind
 nativewind-env.d.ts
+
+#env
+.env
