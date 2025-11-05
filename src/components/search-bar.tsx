@@ -60,7 +60,7 @@ export default forwardRef<SearchBarHandle, Props>(
         <TextInput
           ref={inputRef}
           placeholder={placeholder}
-          className="flex-1 text-main"
+          className="flex-1 justify-center text-main"
           placeholderTextColor="rgba(255,255,255,0.3)"
           cursorColor="rgba(255,255,255,0.8)"
           maxLength={15}
