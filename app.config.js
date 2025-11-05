@@ -6,11 +6,12 @@ export default {
     orientation: "portrait",
     icon: "./src/assets/images/icon.png",
     userInterfaceStyle: "automatic",
+    scheme: "ymvideo",
     android: {
       edgeToEdgeEnabled: true,
       package: "com.zhangmingyang.ymvideo",
       jsEngine: "hermes",
-      permissions: ["WRITE_SETTINGS"],
+      permissions: ["WRITE_SETTINGS", "REQUEST_INSTALL_PACKAGES"],
     },
 
     plugins: [
@@ -28,8 +29,6 @@ export default {
         {
           android: {
             buildArchs: ["arm64-v8a"],
-            enableMinifyInReleaseBuilds: true,
-            enableShrinkResourcesInReleaseBuilds: true,
           },
         },
       ],
