@@ -88,7 +88,12 @@ export default function () {
 
   return (
     <GestureDetector gesture={containerGesture}>
-      <View className="wh-full flex-row justify-between items-center absolute top-0 left-0 z-10">
+      <View
+        className="wh-full flex-row justify-between items-center absolute top-0 left-0 z-10"
+        style={{
+          paddingHorizontal: Math.max(left, right),
+        }}
+      >
         {/* 三倍速 和 亮度 */}
         <GestureDetector gesture={panBright}>
           <View className="flex-1 h-full " />
@@ -98,7 +103,7 @@ export default function () {
 
         {/* 三倍速 和 声音*/}
         <GestureDetector gesture={panVolume}>
-          <View className="flex-1 h-full" />
+          <View className="flex-1 h-full " />
         </GestureDetector>
       </View>
     </GestureDetector>
