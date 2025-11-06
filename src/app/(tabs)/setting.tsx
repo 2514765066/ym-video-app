@@ -74,13 +74,8 @@ function GeneralOption() {
 }
 
 function UpdateOption() {
-  const {
-    lastUpdateTime,
-    updateStatus,
-    downloadStatus,
-    updateProgress,
-    installStatus,
-  } = useSnapshot(updateState);
+  const { lastUpdateTime, updateStatus, downloadStatus, updateProgress } =
+    useSnapshot(updateState);
 
   const handleUpdate = useLoading(async () => {
     const res = await checkUpdate();
@@ -111,16 +106,8 @@ function UpdateOption() {
 
     if (downloadMap[downloadStatus]) return downloadMap[downloadStatus];
 
-    if (installStatus === "canceled") return "点击安装";
-
     return `${getTimeDiffLabel(lastUpdateTime, Date.now())}前检查过`;
-  }, [
-    updateStatus,
-    downloadStatus,
-    installStatus,
-    lastUpdateTime,
-    updateProgress,
-  ]);
+  }, [updateStatus, downloadStatus, lastUpdateTime, updateProgress]);
 
   return (
     <GroupItem

@@ -1,4 +1,4 @@
-import { appVersion, appName } from "@/services/info";
+import { appVersion } from "@/services/info";
 import { formatVersion } from "@/utils/format";
 import { Paths, File } from "expo-file-system";
 import {
@@ -37,8 +37,6 @@ type UpdateState = {
     | "update-not-available";
 
   downloadStatus: "init" | "downloading" | "downloaded" | "failed";
-
-  installStatus: "init" | "canceled" | "success";
 };
 
 export const updateState = proxy<UpdateState>({
@@ -60,9 +58,6 @@ export const updateState = proxy<UpdateState>({
 
   //下载状态
   downloadStatus: "init",
-
-  //安装状态
-  installStatus: "init",
 });
 
 interface UpdateInfo {
@@ -76,10 +71,12 @@ interface UpdateInfo {
 
 interface UpdateConfig {
   md5: string;
+  version: string;
+  name: string;
 }
 
 //获取配置
-const getJson = async (url: string) => {
+const getJson = async <T>(url: string): Promise<T> => {
   const response = await fetch(url);
 
   return await response.json();
@@ -100,34 +97,39 @@ export const checkUpdate = async () => {
 
   const updateInfo: UpdateInfo = await response.json();
 
-  //不需要更新
-  if (formatVersion(appVersion) >= formatVersion(updateInfo.name)) {
-    updateState.updateStatus = "update-not-available";
-    return;
-  }
-
   //找到对应的配置信息
   const latestConfig = updateInfo.assets.find(
     item => item.name == "latest.json"
   );
 
-  //找到对应的安装包
-  const latestInfo = updateInfo.assets.find(
-    item => item.name == `${appName}-${updateInfo.name}.apk`
-  );
-
-  if (!latestInfo || !latestConfig) {
+  //没有配置
+  if (!latestConfig) {
     updateState.updateStatus = "update-not-available";
     return;
   }
 
-  const { md5 }: UpdateConfig = await getJson(
+  const { md5, version, name } = await getJson<UpdateConfig>(
     latestConfig.browser_download_url
   );
 
+  //不需要更新
+  if (formatVersion(appVersion) >= formatVersion(version)) {
+    updateState.updateStatus = "update-not-available";
+    return;
+  }
+
+  //找到对应的安装包
+  const apkInfo = updateInfo.assets.find(item => item.name == name);
+
+  //没有安装包
+  if (!apkInfo) {
+    updateState.updateStatus = "update-not-available";
+    return;
+  }
+
   updateState.updateInfo = {
-    version: updateInfo.name,
-    downloadUrl: latestInfo.browser_download_url,
+    version,
+    downloadUrl: apkInfo.browser_download_url,
     md5,
   };
 
@@ -184,24 +186,11 @@ export const download = async () => {
 export const install = async (uri: string) => {
   const contentUri = await getContentUriAsync(uri);
 
-  const intentLauncherResult = await startActivityAsync(
-    "android.intent.action.VIEW",
-    {
-      data: contentUri,
-      flags: 1,
-      type: "application/vnd.android.package-archive",
-    }
-  );
-
-  if (intentLauncherResult.resultCode == 0) {
-    updateState.installStatus = "canceled";
-    return;
-  }
-
-  if (intentLauncherResult.resultCode == -1) {
-    updateState.installStatus = "success";
-    return;
-  }
+  await startActivityAsync("android.intent.action.VIEW", {
+    data: contentUri,
+    flags: 1,
+    type: "application/vnd.android.package-archive",
+  });
 };
 
 //保存
