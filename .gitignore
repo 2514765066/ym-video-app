@@ -24,10 +24,8 @@ yarn-error.*
 /android
 
 .vscode
-scripts
 
 # nativewind
 nativewind-env.d.ts
 
-#env
-.env
+release
