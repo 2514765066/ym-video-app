@@ -1,12 +1,14 @@
+import { version, name } from "./package.json";
+
 export default {
   expo: {
-    name: "ym-video",
-    slug: "ym-video",
-    version: "1.0.0",
+    name,
+    slug: name,
+    version,
     orientation: "portrait",
     icon: "./src/assets/images/icon.png",
     userInterfaceStyle: "automatic",
-    scheme: "ymvideo",
+    scheme: name.replace("-", ""),
     android: {
       edgeToEdgeEnabled: true,
       package: "com.zhangmingyang.ymvideo",
@@ -42,7 +44,7 @@ export default {
 
     extra: {
       eas: {
-        projectId: "9f8a9d65-a06e-48aa-84d8-96b7c4e78f48",
+        projectId: process.env.EAS_PROJECTID_YMVIDEO,
       },
     },
   },
