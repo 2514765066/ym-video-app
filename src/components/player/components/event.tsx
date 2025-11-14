@@ -96,14 +96,14 @@ export default function () {
       >
         {/* 三倍速 和 亮度 */}
         <GestureDetector gesture={panBright}>
-          <View className="flex-1 h-full " />
+          <View className="flex-1 h-3/4" />
         </GestureDetector>
 
         <PlayTip />
 
         {/* 三倍速 和 声音*/}
         <GestureDetector gesture={panVolume}>
-          <View className="flex-1 h-full " />
+          <View className="flex-1 h-3/4" />
         </GestureDetector>
       </View>
     </GestureDetector>
