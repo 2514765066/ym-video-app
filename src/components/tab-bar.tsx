@@ -1,16 +1,20 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Pressable, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) {
+  const { bottom } = useSafeAreaInsets();
+
   return (
     <View
       className="w-screen flex-row justify-evenly items-center bg-bg"
       style={{
-        height: 60,
+        height: 60 + bottom,
+        paddingBottom: bottom,
         boxShadow: [
           {
             offsetX: 0,
