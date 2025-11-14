@@ -50,14 +50,26 @@ export default function () {
     .activeOffsetX([-5, 5])
     .activeOffsetY([-1000, 1000])
     .onStart(() => {
+      if (duration == 0) {
+        return;
+      }
+
       pause();
     })
     .onUpdate(e => {
+      if (duration == 0) {
+        return;
+      }
+
       const ratio = e.translationX / (width - Math.max(left, right) * 2);
       updateSeek(ratio);
       showSeek();
     })
     .onEnd(() => {
+      if (duration == 0) {
+        return;
+      }
+
       seekTo(duration * seekRatio);
       hideSeek();
       play();
