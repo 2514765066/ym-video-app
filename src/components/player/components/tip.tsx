@@ -42,7 +42,7 @@ export default function () {
   }, []);
 
   return (
-    <View className="wh-full flex-center absolute top-0 left-0 z-10 pointer-events-none">
+    <View className="wh-full flex-center absolute top-0 left-0 z-20 pointer-events-none">
       <RateTip />
 
       {loading && <Loading />}

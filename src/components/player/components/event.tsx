@@ -16,7 +16,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSnapshot } from "valtio";
 import Icon from "@/components/icon";
 import eventEmitter from "@/hooks/eventEmitter";
-import { videoStore } from "../store/useVideo";
 import usePanGesure from "@/hooks/usePanGesure";
 
 const { width } = Dimensions.get("window");
@@ -112,11 +111,10 @@ export default function () {
 
 function PlayTip() {
   const { isPlay } = useSnapshot(playStore);
-  const { loading } = useSnapshot(videoStore);
 
   const tap = Gesture.Tap().runOnJS(true).onStart(play);
 
-  if (isPlay || loading) {
+  if (isPlay) {
     return null;
   }
 
