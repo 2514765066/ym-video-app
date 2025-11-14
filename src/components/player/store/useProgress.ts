@@ -29,7 +29,7 @@ export const hideSeek = () => {
 export const updateSeek = (ratio: number) => {
   const currentRatio = progressStore.currentTime / progressStore.duration;
 
-  const newRatio = currentRatio + ratio / 2;
+  const newRatio = currentRatio + ratio / 4;
 
   progressStore.seekRatio = Math.max(0, Math.min(1, newRatio));
 };
