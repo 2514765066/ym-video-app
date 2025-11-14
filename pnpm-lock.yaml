@@ -147,9 +147,9 @@ importers:
       typescript:
         specifier: ~5.9.2
         version: 5.9.3
-      ym-release:
-        specifier: ^1.1.0
-        version: 1.1.0
+      ym-publish:
+        specifier: ^1.2.1
+        version: 1.2.1
 
 packages:
 
@@ -3899,8 +3899,8 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
-  ym-release@1.1.0:
-    resolution: {integrity: sha512-lMKah05tpb57jo+CHEJ7wUvbT6PaBR+BiUESQqpJ+abX2S242nnP0mx81j2ssbYrTF2ujv5LcTJiAtIcUMo70Q==}
+  ym-publish@1.2.1:
+    resolution: {integrity: sha512-la95MCKKMqLjfozTcF2eq44L12Qqbav81RFYu032ijZATzI22uywzBoPM+P9SujTubiXGgvVC6q+8N1NubSF3A==}
 
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
@@ -8187,7 +8187,7 @@ snapshots:
       y18n: 5.0.8
       yargs-parser: 21.1.1
 
-  ym-release@1.1.0: {}
+  ym-publish@1.2.1: {}
 
   yocto-queue@0.1.0: {}
 

@@ -1,7 +1,10 @@
-const { useGiteeReleases, useGithubReleases } = require("ym-release");
+const {
+  useGiteeReleases,
+  useGithubReleases,
+  getLatest,
+} = require("ym-publish");
 const { version } = require("../package.json");
-const { join, basename } = require("path");
-const crypto = require("crypto");
+const { join } = require("path");
 const fs = require("fs");
 
 const { GITEE_TOKEN, GH_TOKEN } = process.env;
@@ -31,48 +34,26 @@ const getDoc = version => {
   return match ? match[1].trim() : "";
 };
 
-//获取md5
-const getFileMD5 = path => {
-  const buffer = fs.readFileSync(path);
-  const hash = crypto.createHash("md5");
-  hash.update(buffer);
-  return hash.digest("hex");
-};
-
-//获取latest.json
-const getLatestFile = path => {
-  const md5 = getFileMD5(path);
-
-  const name = basename(path);
-
-  const res = {
-    md5,
-    version,
-    name,
-  };
-
-  return new File([JSON.stringify(res)], "latest.json");
-};
-
 const main = async () => {
   const body = getDoc(version);
 
-  const apkPath = join(__dirname, `../release/ym-video-${version}.apk`);
+  const filePath = join(__dirname, `../dist/ym-video-${version}.apk`);
 
-  const latestFile = getLatestFile(apkPath);
+  const latestFile = getLatest({
+    path: filePath,
+    version,
+  });
 
   await giteeRelease({
-    tag: `v${version}`,
-    name: version,
+    version,
     body,
-    filepaths: [latestFile, apkPath],
+    filepaths: [latestFile, filePath],
   });
 
   await githubRelease({
-    tag: `v${version}`,
-    name: version,
+    version,
     body,
-    filepaths: [latestFile, apkPath],
+    filepaths: [latestFile, filePath],
   });
 };
 
