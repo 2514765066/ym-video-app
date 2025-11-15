@@ -4,6 +4,8 @@ import { View, ScrollView } from "react-native";
 import { openURL } from "expo-linking";
 import { appVersion } from "@/services/info";
 
+const address = "https://gitee.com/yxingyus/ym-video-app";
+
 export default function () {
   return (
     <View className=" flex-1 bg-bg">
@@ -15,15 +17,21 @@ export default function () {
       >
         <Group data={[<VersionOption />]} />
 
-        <Group data={[<AddressOption />, <IssueOption />]} />
+        <Group
+          data={[<UpdateContentOption />, <AddressOption />, <IssueOption />]}
+        />
       </ScrollView>
     </View>
   );
 }
 
+function VersionOption() {
+  return <GroupItem label="当前版本" sub={appVersion} />;
+}
+
 function AddressOption() {
   const handlePress = () => {
-    openURL("https://github.com/2514765066/ym-video-app");
+    openURL(address);
   };
 
   return (
@@ -38,7 +46,7 @@ function AddressOption() {
 
 function IssueOption() {
   const handlePress = () => {
-    openURL("https://github.com/2514765066/ym-video-app/issues");
+    openURL(`${address}/issues`);
   };
 
   return (
@@ -51,6 +59,17 @@ function IssueOption() {
   );
 }
 
-function VersionOption() {
-  return <GroupItem label="当前版本" sub={appVersion} />;
+function UpdateContentOption() {
+  const handlePress = () => {
+    openURL(`${address}/blob/main/release-note.md`);
+  };
+
+  return (
+    <GroupItem
+      label="更新内容"
+      icon="update"
+      onPress={handlePress}
+      rightVisible={true}
+    />
+  );
 }
