@@ -113,11 +113,11 @@ export const updateProgress = ({
     historyState.selectedProgress = { currentTime: 0, duration: 0 };
   }
 
-  if (currentTime) {
+  if (currentTime && currentTime > 1) {
     historyState.selectedProgress.currentTime = currentTime;
   }
 
-  if (duration) {
+  if (duration && duration > 1) {
     historyState.selectedProgress.duration = duration;
   }
 };
