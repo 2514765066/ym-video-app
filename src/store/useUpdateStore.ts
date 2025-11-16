@@ -208,6 +208,8 @@ const init = () => {
 
   if (res) {
     updateState.lastUpdateTime = JSON.parse(res);
+  } else {
+    updateState.lastUpdateTime = Date.now();
   }
 
   if (configState.autoUpdate) {
