@@ -69,7 +69,7 @@ export default function ({ data }: Props) {
         <View className="flex-row  items-center">
           <Icon name="source" color="#888" size={20} className="mr-1" />
 
-          <Text className="text-sub mr-3">{data.source}</Text>
+          <Text className="text-sub mr-3">{data.source.label}</Text>
 
           <Text className="text-sub">{formatDay(data.time)}</Text>
         </View>

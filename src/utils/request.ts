@@ -1,4 +1,4 @@
-import { sourceState } from "@/store/useSourceStore";
+import { configState } from "@/store/useConfigStore";
 
 interface Option {
   url?: string;
@@ -11,9 +11,7 @@ export const request = async <T>({
 }: Option = {}): Promise<T> => {
   const str = new URLSearchParams(query).toString();
 
-  const response = await fetch(
-    `${url || sourceState.selectedSource.value}?${str}`
-  );
+  const response = await fetch(`${url || configState.source.url}?${str}`);
 
   return await response.json();
 };

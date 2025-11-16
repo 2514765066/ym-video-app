@@ -75,8 +75,6 @@ function HistoryCard({ data }: Props) {
           {data.name}
         </Text>
       </View>
-
-      {/* <Text className="text-sub text-sm">{data.url[data.history].label}</Text> */}
     </View>
   );
 }

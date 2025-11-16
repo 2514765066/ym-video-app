@@ -49,13 +49,13 @@ function Header() {
 }
 
 function SourceOption() {
-  const { sourceName } = useSnapshot(configState);
+  const { source } = useSnapshot(configState);
 
   return (
     <GroupItem
       label="播放源"
       icon="source"
-      sub={sourceName}
+      sub={source.label}
       onPress={() => router.push("/settings/source")}
       rightVisible={true}
     />
@@ -77,6 +77,16 @@ function UpdateOption() {
   const { lastUpdateTime, updateStatus, downloadStatus, updateProgress } =
     useSnapshot(updateState);
 
+  const map: Record<string, string> = {
+    error: "网络错误,请重试",
+    checking: "正在检查更新",
+    "update-not-available": "已是最新版",
+
+    downloading: `下载中: ${updateProgress}%`,
+    downloaded: "正在安装",
+    failed: "下载失败",
+  };
+
   const handleUpdate = useLoading(async () => {
     const res = await checkUpdate();
 
@@ -88,26 +98,12 @@ function UpdateOption() {
   });
 
   const subLabel = useMemo(() => {
-    if (downloadStatus === "downloading") {
-      return `下载中: ${updateProgress}%`;
+    if (map[updateStatus]) {
+      return map[updateStatus];
     }
 
-    const updateMap: Record<string, string> = {
-      checking: "正在检查更新",
-      "update-not-available": "已是最新版",
-    };
-
-    if (updateMap[updateStatus]) return updateMap[updateStatus];
-
-    const downloadMap: Record<string, string> = {
-      downloaded: "正在安装",
-      failed: "下载失败",
-    };
-
-    if (downloadMap[downloadStatus]) return downloadMap[downloadStatus];
-
     return `${getTimeDiffLabel(lastUpdateTime, Date.now())}前检查过`;
-  }, [updateStatus, downloadStatus, lastUpdateTime, updateProgress]);
+  }, [updateStatus, downloadStatus, updateProgress]);
 
   return (
     <GroupItem

@@ -70,8 +70,10 @@ export type MovieInfo = {
   type: string;
   url: Episode[];
   remarks: string;
-  source: string;
-  // score: string;
+  source: {
+    url: string;
+    label: string;
+  };
 };
 
 //更新信息

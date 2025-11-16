@@ -3,7 +3,6 @@ import * as db from "@/services/db";
 import { HistoryInfo, Progress } from "@/type";
 import { proxy } from "valtio";
 import { proxyMap } from "valtio/utils";
-import { getSource } from "./useSourceStore";
 
 type HistoryStore = {
   data: Map<string, HistoryInfo>;
@@ -143,19 +142,17 @@ const update = async (data: Map<string, HistoryInfo>) => {
       return;
     }
 
-    if (!group.has(item.source)) {
-      group.set(item.source, []);
+    if (!group.has(item.source.url)) {
+      group.set(item.source.url, []);
     }
 
-    group.get(item.source)!.push(item.id);
+    group.get(item.source.url)!.push(item.id);
   });
 
   if (group.size == 0) return;
 
   const results = await Promise.all(
-    Array.from(group.entries()).map(([sourceName, ids]) =>
-      getUpdate(getSource(sourceName), ids)
-    )
+    Array.from(group.entries()).map(([source, ids]) => getUpdate(source, ids))
   );
 
   for (const detailMap of results) {

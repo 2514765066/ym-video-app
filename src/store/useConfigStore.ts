@@ -6,7 +6,10 @@ export const configState = proxy({
   autoUpdate: false,
 
   //源名称
-  sourceName: "暴风资源",
+  source: {
+    label: "量子资源",
+    url: "https://cj.lziapi.com/api.php/provide/vod/",
+  },
 
   //仓库名称
   repo: {
@@ -23,12 +26,8 @@ export const toggleAutoUpdate = () => {
 };
 
 //更新源名称
-export const setSourceName = (name: string) => {
-  if (configState.sourceName == name) {
-    return;
-  }
-
-  configState.sourceName = name;
+export const setSource = (option: { label: string; url: string }) => {
+  configState.source = option;
 };
 
 //更新仓库

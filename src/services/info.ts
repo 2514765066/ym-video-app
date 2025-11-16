@@ -1,7 +1,7 @@
 import { nativeApplicationVersion, applicationName } from "expo-application";
 
 //使用最小的版本
-export const minVersion = "1.0.0";
+export const minVersion = "1.3.0";
 
 //当前版本
 export const appVersion = nativeApplicationVersion as string;
