@@ -11,7 +11,9 @@ export const request = async <T>({
 }: Option = {}): Promise<T> => {
   const str = new URLSearchParams(query).toString();
 
-  const response = await fetch(`${url || configState.source.url}?${str}`);
+  const response = await fetch(
+    `${url || configState.selectedSource.url}?${str}`
+  );
 
   return await response.json();
 };

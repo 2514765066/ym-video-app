@@ -102,3 +102,9 @@ export type SetItem = {
   icon?: IconName;
   onPress?: () => void;
 };
+
+//源
+export type Source = {
+  label: string;
+  url: string;
+};

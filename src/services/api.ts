@@ -39,7 +39,7 @@ const handleDetail = (data: Detail_Res_List[]): MovieInfo[] => {
   return data.map(item => ({
     name: item.vod_name,
     content: formatContent(item.vod_content),
-    id: `${configState.source.label},${item.vod_id}`,
+    id: `${configState.selectedSource.label},${item.vod_id}`,
     pic: item.vod_pic,
     year: item.vod_year,
     area: item.vod_area,
@@ -48,8 +48,8 @@ const handleDetail = (data: Detail_Res_List[]): MovieInfo[] => {
     url: handlePlayUrl(item.vod_play_url, item.vod_play_note),
     remarks: item.vod_remarks,
     source: {
-      url: configState.source.url,
-      label: configState.source.label,
+      url: configState.selectedSource.url,
+      label: configState.selectedSource.label,
     },
   }));
 };
@@ -57,7 +57,7 @@ const handleDetail = (data: Detail_Res_List[]): MovieInfo[] => {
 //处理返回结果
 const handleUpdate = (data: Detail_Res_List[]): UpdateInfo[] => {
   return data.map(item => ({
-    id: `${configState.source.label},${item.vod_id}`,
+    id: `${configState.selectedSource.label},${item.vod_id}`,
     remarks: item.vod_remarks,
     url: handlePlayUrl(
       item.vod_play_url,
@@ -141,8 +141,8 @@ export const getUpdate = async (source: string, ids: string[]) => {
 };
 
 //获取分类
-export const getCategory = async () => {
-  const res = await request<List_Res>();
+export const getCategory = async (url?: string) => {
+  const res = await request<List_Res>({ url });
 
   const category = new Map<number, Category>();
 

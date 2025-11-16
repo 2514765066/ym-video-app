@@ -8,12 +8,12 @@ import Icon from "@/components/icon";
 import { configState } from "@/store/useConfigStore";
 
 export default function TabLayout() {
-  const { source } = useSnapshot(configState);
+  const { selectedSource } = useSnapshot(configState);
 
   useEffect(() => {
     movieStore.init();
     latestStore.init();
-  }, [source]);
+  }, [selectedSource]);
 
   return (
     <Tabs

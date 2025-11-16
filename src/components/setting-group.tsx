@@ -9,15 +9,16 @@ interface RenderItem<T> {
 
 type GroupProps<T> = {
   data: T[];
+  itemKey?: (item: T) => string | number;
   renderItem?: (props: RenderItem<T>) => ReactNode;
 };
 
-export function Group<T>({ data, renderItem }: GroupProps<T>) {
+export function Group<T>({ data, renderItem, itemKey }: GroupProps<T>) {
   return (
     <View className="rounded-xl bg-222">
       {data.map((item, index) => (
         <View
-          key={index}
+          key={itemKey ? itemKey(item) : index}
           className={`w-full h-14 border-333 ${index != data.length - 1 && "border-b"}`}
         >
           {isValidElement(item)
@@ -37,9 +38,11 @@ type ItemProps = {
   label: string;
   sub?: string | ReactNode;
   icon?: IconName;
-  onPress?: () => void;
 
   rightVisible?: boolean;
+
+  onPress?: () => void;
+  onLongPress?: () => void;
 };
 
 export function GroupItem({
@@ -48,11 +51,14 @@ export function GroupItem({
   icon,
   rightVisible,
   onPress,
+  onLongPress,
 }: ItemProps) {
   return (
     <TouchableOpacity
       className="flex-1 px-4 flex-row items-center gap-2"
       onPress={() => onPress && onPress()}
+      onLongPress={onLongPress}
+      delayLongPress={200}
     >
       {icon && <Icon name={icon} size={22} />}
 

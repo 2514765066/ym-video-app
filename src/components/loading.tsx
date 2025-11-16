@@ -1,13 +1,22 @@
 import { View } from "react-native";
 import Icon from "./icon";
 
-export function LoadingGlobal() {
+type LoadingGlobalProps = {
+  mask?: boolean;
+};
+
+export function LoadingGlobal({ mask }: LoadingGlobalProps) {
   return (
     <View
-      className="w-screen h-screen flex-center absolute inset-0 pointer-events-none"
-      style={{
-        zIndex: 100,
-      }}
+      className={`w-screen h-screen flex-center absolute inset-0 ${!mask && "pointer-events-none"}`}
+      style={[
+        {
+          zIndex: 999,
+        },
+        mask && {
+          backgroundColor: "rgba(0,0,0,0.5)",
+        },
+      ]}
     >
       <Icon
         name="loading"

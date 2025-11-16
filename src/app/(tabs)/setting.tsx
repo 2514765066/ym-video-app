@@ -49,13 +49,13 @@ function Header() {
 }
 
 function SourceOption() {
-  const { source } = useSnapshot(configState);
+  const { selectedSource } = useSnapshot(configState);
 
   return (
     <GroupItem
       label="播放源"
       icon="source"
-      sub={source.label}
+      sub={selectedSource.label}
       onPress={() => router.push("/settings/source")}
       rightVisible={true}
     />

@@ -28,6 +28,14 @@ class EventEmitter {
     };
   }
 
+  off<T extends EventNames>(eventName: T, listener: EventMap[T]) {
+    if (!(eventName in this.listeners)) {
+      return;
+    }
+
+    this.listeners[eventName].delete(listener);
+  }
+
   emit<T extends EventNames>(eventName: T, ...args: Parameters<EventMap[T]>) {
     if (!(eventName in this.listeners)) {
       return;

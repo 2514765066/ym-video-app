@@ -33,8 +33,14 @@ import update from "@iconify/icons-fluent/arrow-circle-up-20-regular";
 import bug from "@iconify/icons-fluent/bug-20-regular";
 import globe from "@iconify/icons-fluent/globe-20-regular";
 import about from "@iconify/icons-fluent/error-circle-20-regular";
+import add from "@iconify/icons-fluent/add-circle-20-regular";
+import link from "@iconify/icons-fluent/link-20-regular";
+import tag from "@iconify/icons-fluent/tag-20-regular";
 
 const iconPacks = {
+  tag,
+  link,
+  add,
   rate,
   list,
   arrow,
