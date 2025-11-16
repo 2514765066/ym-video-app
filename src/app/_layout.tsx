@@ -9,6 +9,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useNetworkState } from "expo-network";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import Dialog from "@/components/dialog";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -63,7 +64,11 @@ export default function RootLayout() {
             <Stack.Screen name="settings/about" />
 
             <Stack.Screen name="settings/repo" />
+
+            <Stack.Screen name="settings/add-source" />
           </Stack>
+
+          <Dialog />
         </SafeAreaProvider>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>

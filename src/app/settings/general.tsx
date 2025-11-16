@@ -5,6 +5,10 @@ import { configState, toggleAutoUpdate } from "@/store/useConfigStore";
 import { router } from "expo-router";
 import { View, ScrollView } from "react-native";
 import { useSnapshot } from "valtio";
+import storage from "@/services/storage";
+import RNRestart from "react-native-restart";
+import * as db from "@/services/db";
+import * as dialog from "@/components/dialog";
 
 export default function () {
   return (
@@ -16,6 +20,8 @@ export default function () {
         showsVerticalScrollIndicator={false}
       >
         <Group data={[<AutoUpdateOption />, <RepoOption />]} />
+
+        <Group data={[<ResetOption />]} />
       </ScrollView>
     </View>
   );
@@ -44,6 +50,38 @@ function RepoOption() {
       sub={repo.label}
       onPress={() => router.push("/settings/repo")}
       rightVisible={true}
+    />
+  );
+}
+
+function ResetOption() {
+  const reset = () => {
+    storage.reset();
+
+    db.reset();
+
+    RNRestart.restart();
+  };
+
+  const handlePress = async () => {
+    try {
+      await dialog.confirm({
+        label: "确定要重置吗",
+        content: "重置后会清除所有设置项，历史记录，搜索记录",
+      });
+
+      reset();
+    } catch {
+      return;
+    }
+  };
+
+  return (
+    <GroupItem
+      label="重置"
+      icon="remove"
+      sub="删除所有数据"
+      onPress={handlePress}
     />
   );
 }

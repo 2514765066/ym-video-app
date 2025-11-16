@@ -12,7 +12,12 @@ const setItem = (key: Key, value: string) => {
   storage.set(key, value);
 };
 
+const reset = () => {
+  storage.clearAll();
+};
+
 export default {
   getItem,
   setItem,
+  reset,
 };

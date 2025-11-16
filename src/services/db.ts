@@ -53,3 +53,8 @@ export const update = async (data: HistoryInfo) => {
 export const remove = async (id: string) => {
   await db.runAsync(`delete from ${dbName} where id = ?`, [id]);
 };
+
+//清空
+export const reset = async () => {
+  await db.runAsync(`delete from ${dbName}`);
+};
