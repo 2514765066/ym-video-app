@@ -7,6 +7,14 @@ export const configState = proxy({
 
   //源名称
   sourceName: "暴风资源",
+
+  //仓库名称
+  repo: {
+    label: "Gitee",
+    url: "https://gitee.com/yxingyus/ym-video-app",
+    updateUrl:
+      "https://gitee.com/api/v5/repos/yxingyus/ym-video-app/releases/latest",
+  },
 });
 
 //切换自动更新
@@ -21,6 +29,15 @@ export const setSourceName = (name: string) => {
   }
 
   configState.sourceName = name;
+};
+
+//更新仓库
+export const setRepo = (option: {
+  label: string;
+  url: string;
+  updateUrl: string;
+}) => {
+  configState.repo = option;
 };
 
 //保存

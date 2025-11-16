@@ -60,6 +60,8 @@ export default function RootLayout() {
             <Stack.Screen name="settings/general" />
 
             <Stack.Screen name="settings/about" />
+
+            <Stack.Screen name="settings/repo" />
           </Stack>
         </SafeAreaProvider>
       </BottomSheetModalProvider>

@@ -2,6 +2,7 @@ import Switch from "@/components/input/switch";
 import { Group, GroupItem } from "@/components/setting-group";
 import TitleBar, { BackControl } from "@/components/title-bar";
 import { configState, toggleAutoUpdate } from "@/store/useConfigStore";
+import { router } from "expo-router";
 import { View, ScrollView } from "react-native";
 import { useSnapshot } from "valtio";
 
@@ -14,7 +15,7 @@ export default function () {
         contentContainerClassName="p-4 gap-4"
         showsVerticalScrollIndicator={false}
       >
-        <Group data={[<AutoUpdateOption />]} />
+        <Group data={[<AutoUpdateOption />, <RepoOption />]} />
       </ScrollView>
     </View>
   );
@@ -30,6 +31,19 @@ function AutoUpdateOption() {
         <Switch height={22} active={autoUpdate} onPress={toggleAutoUpdate} />
       }
       onPress={toggleAutoUpdate}
+    />
+  );
+}
+
+function RepoOption() {
+  const { repo } = useSnapshot(configState);
+
+  return (
+    <GroupItem
+      label="远程数据源"
+      sub={repo.label}
+      onPress={() => router.push("/settings/repo")}
+      rightVisible={true}
     />
   );
 }

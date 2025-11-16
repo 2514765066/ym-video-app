@@ -12,13 +12,6 @@ import storage from "@/services/storage";
 import { configState } from "./useConfigStore";
 import { getTimeDiff } from "@/utils/time";
 
-//更新源
-const RELEASES_URL =
-  "https://gitee.com/api/v5/repos/yxingyus/ym-video-app/releases";
-
-//最新版本
-const LATEST_URL = `${RELEASES_URL}/latest`;
-
 type UpdateState = {
   lastUpdateTime: number;
 
@@ -34,7 +27,8 @@ type UpdateState = {
     | "init"
     | "checking"
     | "update-available"
-    | "update-not-available";
+    | "update-not-available"
+    | "error";
 
   downloadStatus: "init" | "downloading" | "downloaded" | "failed";
 };
@@ -84,58 +78,64 @@ const getJson = async <T>(url: string): Promise<T> => {
 
 //检查更新
 export const checkUpdate = async () => {
-  updateState.updateStatus = "checking";
+  try {
+    updateState.updateStatus = "checking";
 
-  save();
+    save();
 
-  const response = await fetch(LATEST_URL);
+    const response = await fetch(configState.repo.updateUrl);
 
-  if (response.status != 200) {
-    updateState.updateStatus = "update-not-available";
-    return;
+    if (response.status != 200) {
+      updateState.updateStatus = "update-not-available";
+      return;
+    }
+
+    const updateInfo: UpdateInfo = await response.json();
+
+    //找到对应的配置信息
+    const latestConfig = updateInfo.assets.find(
+      item => item.name == "latest.json"
+    );
+
+    //没有配置
+    if (!latestConfig) {
+      updateState.updateStatus = "update-not-available";
+      return;
+    }
+
+    const { md5, version, name } = await getJson<UpdateConfig>(
+      latestConfig.browser_download_url
+    );
+
+    //不需要更新
+    if (formatVersion(appVersion) >= formatVersion(version)) {
+      updateState.updateStatus = "update-not-available";
+      return;
+    }
+
+    //找到对应的安装包
+    const apkInfo = updateInfo.assets.find(item => item.name == name);
+
+    //没有安装包
+    if (!apkInfo) {
+      updateState.updateStatus = "update-not-available";
+      return;
+    }
+
+    updateState.updateInfo = {
+      version,
+      downloadUrl: apkInfo.browser_download_url,
+      md5,
+    };
+
+    updateState.updateStatus = "update-available";
+
+    return true;
+  } catch (e) {
+    console.error(e);
+
+    updateState.updateStatus = "error";
   }
-
-  const updateInfo: UpdateInfo = await response.json();
-
-  //找到对应的配置信息
-  const latestConfig = updateInfo.assets.find(
-    item => item.name == "latest.json"
-  );
-
-  //没有配置
-  if (!latestConfig) {
-    updateState.updateStatus = "update-not-available";
-    return;
-  }
-
-  const { md5, version, name } = await getJson<UpdateConfig>(
-    latestConfig.browser_download_url
-  );
-
-  //不需要更新
-  if (formatVersion(appVersion) >= formatVersion(version)) {
-    updateState.updateStatus = "update-not-available";
-    return;
-  }
-
-  //找到对应的安装包
-  const apkInfo = updateInfo.assets.find(item => item.name == name);
-
-  //没有安装包
-  if (!apkInfo) {
-    updateState.updateStatus = "update-not-available";
-    return;
-  }
-
-  updateState.updateInfo = {
-    version,
-    downloadUrl: apkInfo.browser_download_url,
-    md5,
-  };
-
-  updateState.updateStatus = "update-available";
-
-  return true;
 };
 
 //下载

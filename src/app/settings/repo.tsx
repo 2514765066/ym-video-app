@@ -1,0 +1,59 @@
+import Radio from "@/components/input/radio";
+import { Group, GroupItem } from "@/components/setting-group";
+import TitleBar, { BackControl } from "@/components/title-bar";
+import { View, ScrollView } from "react-native";
+import { useSnapshot } from "valtio";
+import { configState, setRepo } from "@/store/useConfigStore";
+import { IconName } from "@/components/icon";
+
+type Source = {
+  label: string;
+  icon: IconName;
+  url: string;
+  updateUrl: string;
+};
+
+const sources: Source[] = [
+  {
+    label: "Gitee",
+    icon: "gitee",
+    url: "https://gitee.com/yxingyus/ym-video-app",
+    updateUrl:
+      "https://gitee.com/api/v5/repos/yxingyus/ym-video-app/releases/latest",
+  },
+  {
+    label: "GitHub",
+    icon: "github",
+    url: "https://github.com/2514765066/ym-video-app",
+    updateUrl:
+      "https://api.github.com/repos/2514765066/ym-video-app/releases/latest",
+  },
+];
+
+export default function () {
+  return (
+    <View className="flex-1 bg-bg">
+      <TitleBar title="远程数据源" leftContent={<BackControl />} />
+
+      <ScrollView
+        contentContainerClassName="p-4"
+        showsVerticalScrollIndicator={false}
+      >
+        <Group data={sources} renderItem={({ item }) => <Item {...item} />} />
+      </ScrollView>
+    </View>
+  );
+}
+
+function Item(props: Source) {
+  const { repo } = useSnapshot(configState);
+
+  return (
+    <GroupItem
+      label={props.label}
+      icon={props.icon}
+      sub={<Radio height={18} active={props.url == repo.url} />}
+      onPress={() => setRepo(props)}
+    />
+  );
+}

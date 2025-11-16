@@ -3,8 +3,8 @@ import TitleBar, { BackControl } from "@/components/title-bar";
 import { View, ScrollView } from "react-native";
 import { openURL } from "expo-linking";
 import { appVersion } from "@/services/info";
-
-const address = "https://gitee.com/yxingyus/ym-video-app";
+import { useSnapshot } from "valtio";
+import { configState } from "@/store/useConfigStore";
 
 export default function () {
   return (
@@ -30,8 +30,10 @@ function VersionOption() {
 }
 
 function AddressOption() {
+  const { repo } = useSnapshot(configState);
+
   const handlePress = () => {
-    openURL(address);
+    openURL(repo.url);
   };
 
   return (
@@ -45,8 +47,10 @@ function AddressOption() {
 }
 
 function IssueOption() {
+  const { repo } = useSnapshot(configState);
+
   const handlePress = () => {
-    openURL(`${address}/issues`);
+    openURL(`${repo.url}/issues`);
   };
 
   return (
@@ -60,8 +64,10 @@ function IssueOption() {
 }
 
 function UpdateContentOption() {
+  const { repo } = useSnapshot(configState);
+
   const handlePress = () => {
-    openURL(`${address}/blob/main/release-note.md`);
+    openURL(`${repo.url}/blob/main/release-note.md`);
   };
 
   return (
