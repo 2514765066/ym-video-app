@@ -102,6 +102,10 @@ function UpdateOption() {
       return map[updateStatus];
     }
 
+    if (map[downloadStatus]) {
+      return map[downloadStatus];
+    }
+
     return `${getTimeDiffLabel(lastUpdateTime, Date.now())}前检查过`;
   }, [updateStatus, downloadStatus, updateProgress]);
 
