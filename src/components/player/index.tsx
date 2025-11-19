@@ -54,7 +54,7 @@ export default function () {
   }, []);
 
   return (
-    <View className="flex-1 relative bg-black">
+    <View className="flex-1 flex-center relative bg-black">
       <Tip />
 
       <Rate />

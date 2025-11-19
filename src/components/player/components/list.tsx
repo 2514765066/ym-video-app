@@ -40,7 +40,7 @@ export default function () {
 
   return (
     <Pressable
-      className="wh-full items-center absolute top-0 left-0 z-40"
+      className="items-center absolute inset-0 z-40"
       style={{
         backgroundColor: "rgba(0,0,0,0.8)",
       }}

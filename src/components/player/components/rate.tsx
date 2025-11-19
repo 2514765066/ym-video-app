@@ -29,25 +29,27 @@ export default function () {
     };
   }, []);
 
+  if (!visible) {
+    return null;
+  }
+
   return (
-    visible && (
-      <Pressable
-        className="wh-full items-center absolute top-0 left-0 z-40"
-        style={{
-          backgroundColor: "rgba(0,0,0,0.8)",
-        }}
-        onPress={handleClose}
-      >
-        <FlatList
-          className="w-1/4 h-full pt-6"
-          contentContainerClassName="py-2 gap-2"
-          showsVerticalScrollIndicator={false}
-          data={rateList}
-          keyExtractor={item => String(item.value)}
-          renderItem={({ item }) => <Item data={item} />}
-        />
-      </Pressable>
-    )
+    <Pressable
+      className="items-center absolute inset-0 z-40"
+      style={{
+        backgroundColor: "rgba(0,0,0,0.8)",
+      }}
+      onPress={handleClose}
+    >
+      <FlatList
+        className="w-1/4 h-full pt-6"
+        contentContainerClassName="py-2 gap-2"
+        showsVerticalScrollIndicator={false}
+        data={rateList}
+        keyExtractor={item => String(item.value)}
+        renderItem={({ item }) => <Item data={item} />}
+      />
+    </Pressable>
   );
 }
 

@@ -1,6 +1,6 @@
 import useVisible from "@/hooks/useVisible";
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { useSnapshot } from "valtio";
 import { brightnessStore } from "../store/useBrightness";
 import { volumeStore } from "../store/useVolume";
@@ -9,6 +9,7 @@ import Icon from "@/components/icon";
 import { rateStore } from "../store/useRate";
 import { Loading } from "@/components/loading";
 import { videoStore } from "../store/useVideo";
+import { play, playStore } from "../store/usePlay";
 
 const tpyeMap = {
   volume: <VolumeTip />,
@@ -42,12 +43,14 @@ export default function () {
   }, []);
 
   return (
-    <View className="wh-full flex-center absolute top-0 left-0 z-20 pointer-events-none">
+    <View className="flex-center absolute inset-0 z-20">
       <RateTip />
 
       {loading && <Loading />}
 
       {visible && tpyeMap[type]}
+
+      <PlayTip />
     </View>
   );
 }
@@ -140,5 +143,24 @@ function RateTip() {
     >
       <Text className="text-main">倍速播放中...</Text>
     </View>
+  );
+}
+
+function PlayTip() {
+  const { isPlay } = useSnapshot(playStore);
+
+  if (isPlay) {
+    return null;
+  }
+
+  return (
+    <Pressable className="absolute" onPress={play}>
+      <Icon
+        name="playFill"
+        size={80}
+        stroke="rgba(0,0,0,0.02)"
+        strokeWidth={0.5}
+      />
+    </Pressable>
   );
 }
