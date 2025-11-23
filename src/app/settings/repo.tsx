@@ -3,7 +3,7 @@ import { Group, GroupItem } from "@/components/setting-group";
 import TitleBar, { BackControl } from "@/components/title-bar";
 import { View, ScrollView } from "react-native";
 import { useSnapshot } from "valtio";
-import { configState, setRepo } from "@/store/useConfigStore";
+import { configState, setRepo } from "@/stores/useConfigStore";
 import { IconName } from "@/components/icon";
 
 type Source = {

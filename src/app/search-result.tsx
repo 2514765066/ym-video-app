@@ -3,7 +3,7 @@ import Empty from "@/components/empty";
 import { Loading } from "@/components/loading";
 import TitleBar, { BackControl } from "@/components/title-bar";
 import useLoading from "@/hooks/useLoading";
-import { loadData, searchDataState } from "@/store/useSearchDataStore";
+import { loadData, searchDataState } from "@/stores/useSearchDataStore";
 import { MovieInfo } from "@/type";
 import { FlatList, View, Text } from "react-native";
 import { useSnapshot } from "valtio";

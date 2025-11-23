@@ -1,7 +1,7 @@
 import { MovieInfo } from "@/type";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
-import { updateDetail } from "@/store/useDetailStore";
+import { updateDetail } from "@/stores/useDetailStore";
 import Img from "../img";
 import { formatRemarks, formatSub } from "@/utils/format";
 import { LinearGradient } from "expo-linear-gradient";

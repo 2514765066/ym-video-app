@@ -7,9 +7,9 @@ import { Group, GroupItem } from "@/components/setting-group";
 import { useSnapshot } from "valtio";
 import { useMemo } from "react";
 import { appVersion } from "@/services/info";
-import { checkUpdate, download, updateState } from "@/store/useUpdateStore";
+import { checkUpdate, download, updateState } from "@/stores/useUpdateStore";
 import { getTimeDiffLabel } from "@/utils/time";
-import { configState } from "@/store/useConfigStore";
+import { configState } from "@/stores/useConfigStore";
 import useLoading from "@/hooks/useLoading";
 
 export default function () {

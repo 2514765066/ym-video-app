@@ -1,10 +1,10 @@
-import { add, select } from "@/store/useHistoryStore";
+import { add, select } from "@/stores/useHistoryStore";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSnapshot } from "valtio";
-import { detailState, getDetailData } from "@/store/useDetailStore";
+import { detailState, getDetailData } from "@/stores/useDetailStore";
 import { useRef, useState } from "react";
 import { Episode } from "@/type";
 import useEpisode from "@/hooks/useEpisode";

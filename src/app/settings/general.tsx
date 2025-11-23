@@ -1,7 +1,7 @@
 import Switch from "@/components/input/switch";
 import { Group, GroupItem } from "@/components/setting-group";
 import TitleBar, { BackControl } from "@/components/title-bar";
-import { configState, toggleAutoUpdate } from "@/store/useConfigStore";
+import { configState, toggleAutoUpdate } from "@/stores/useConfigStore";
 import { router } from "expo-router";
 import { View, ScrollView } from "react-native";
 import { useSnapshot } from "valtio";

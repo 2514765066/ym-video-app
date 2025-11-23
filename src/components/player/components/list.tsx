@@ -9,7 +9,7 @@ import { useSnapshot } from "valtio";
 import { FlatList } from "react-native-gesture-handler";
 import { useEffect, useRef, useState } from "react";
 import eventEmitter from "@/hooks/eventEmitter";
-import { historyState } from "@/store/useHistoryStore";
+import { historyState } from "@/stores/useHistoryStore";
 import { Episode } from "@/type";
 import useEpisode from "@/hooks/useEpisode";
 

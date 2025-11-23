@@ -3,7 +3,7 @@ import { Group, GroupItem } from "@/components/setting-group";
 import TitleBar, { BackControl } from "@/components/title-bar";
 import { View, ScrollView } from "react-native";
 import { useSnapshot } from "valtio";
-import { configState, removeSource, setSource } from "@/store/useConfigStore";
+import { configState, removeSource, setSource } from "@/stores/useConfigStore";
 import { router } from "expo-router";
 import { Source } from "@/type";
 import BottomSheetMenu, {

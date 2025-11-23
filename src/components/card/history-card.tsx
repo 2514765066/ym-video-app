@@ -4,7 +4,7 @@ import { HistoryInfo } from "@/type";
 import { LinearGradient } from "expo-linear-gradient";
 import { formatRemarks } from "@/utils/format";
 import { useMemo } from "react";
-import { select } from "@/store/useHistoryStore";
+import { select } from "@/stores/useHistoryStore";
 import { router } from "expo-router";
 
 type Props = {

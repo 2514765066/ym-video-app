@@ -1,5 +1,5 @@
 import useFullscreen from "@/hooks/useFullscreen";
-import { save, saveTime } from "@/store/useHistoryStore";
+import { save, saveTime } from "@/stores/useHistoryStore";
 import { useEffect } from "react";
 import { AppState, View } from "react-native";
 import Event from "./components/event";

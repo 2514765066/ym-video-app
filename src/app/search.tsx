@@ -6,7 +6,7 @@ import {
   remove,
   searchState,
   updateTime,
-} from "@/store/useSearchStore";
+} from "@/stores/useSearchStore";
 import { KeywordHistory } from "@/type";
 import { formatDay } from "@/utils/format";
 import { createRef, useMemo } from "react";
@@ -17,7 +17,7 @@ import BottomSheetMenu, {
   BottomSheetMenuHandle,
 } from "@/components/bottom-sheet/bottom-sheet-menu";
 import { router, useFocusEffect } from "expo-router";
-import { searchData } from "@/store/useSearchDataStore";
+import { searchData } from "@/stores/useSearchDataStore";
 import Empty from "@/components/empty";
 import SearchBar, { SearchBarHandle } from "@/components/search-bar";
 

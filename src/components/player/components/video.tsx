@@ -1,4 +1,4 @@
-import { historyState, updateProgress } from "@/store/useHistoryStore";
+import { historyState, updateProgress } from "@/stores/useHistoryStore";
 import Video, { OnLoadData, OnProgressData } from "react-native-video";
 import { useSnapshot } from "valtio";
 import { videoRef } from "../store/useEl";

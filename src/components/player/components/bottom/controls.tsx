@@ -1,4 +1,8 @@
-import { historyState, nextEpisode, preEpisode } from "@/store/useHistoryStore";
+import {
+  historyState,
+  nextEpisode,
+  preEpisode,
+} from "@/stores/useHistoryStore";
 import { PropsWithChildren, useMemo } from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 import { useSnapshot } from "valtio";

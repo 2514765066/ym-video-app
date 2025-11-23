@@ -1,4 +1,4 @@
-import { configState } from "@/store/useConfigStore";
+import { configState } from "@/stores/useConfigStore";
 import {
   Detail_Res_List,
   Detail_Res,

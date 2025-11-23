@@ -2,10 +2,10 @@ import TabBar from "@/components/tab-bar";
 import { Tabs } from "expo-router";
 import { useEffect } from "react";
 import { useSnapshot } from "valtio";
-import * as movieStore from "@/store/useMovieStore";
-import * as latestStore from "@/store/useLatestMovieStore";
+import * as movieStore from "@/stores/useMovieStore";
+import * as latestStore from "@/stores/useLatestMovieStore";
 import Icon from "@/components/icon";
-import { configState } from "@/store/useConfigStore";
+import { configState } from "@/stores/useConfigStore";
 
 export default function TabLayout() {
   const { selectedSource } = useSnapshot(configState);

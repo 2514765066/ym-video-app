@@ -4,8 +4,8 @@ import BottomSheetMenu, {
   BottomSheetMenuHandle,
 } from "@/components/bottom-sheet/bottom-sheet-menu";
 import TitleBar from "@/components/title-bar";
-import { updateDetail } from "@/store/useDetailStore";
-import { historyState, remove, select } from "@/store/useHistoryStore";
+import { updateDetail } from "@/stores/useDetailStore";
+import { historyState, remove, select } from "@/stores/useHistoryStore";
 import { HistoryInfo } from "@/type";
 import { groupByTime } from "@/utils/group";
 import { router } from "expo-router";

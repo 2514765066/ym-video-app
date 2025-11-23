@@ -1,4 +1,4 @@
-import { configState } from "@/store/useConfigStore";
+import { configState } from "@/stores/useConfigStore";
 
 interface Option {
   url?: string;

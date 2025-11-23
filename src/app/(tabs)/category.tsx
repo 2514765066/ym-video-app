@@ -8,7 +8,7 @@ import {
   movieState,
   updateCategory,
   updateChildCategory,
-} from "@/store/useMovieStore";
+} from "@/stores/useMovieStore";
 import { MovieInfo } from "@/type";
 import { router } from "expo-router";
 import { useMemo } from "react";

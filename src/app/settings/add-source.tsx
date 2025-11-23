@@ -13,7 +13,7 @@ import { LoadingGlobal } from "@/components/loading";
 import { router } from "expo-router";
 import Icon from "@/components/icon";
 import { proxy, useSnapshot } from "valtio";
-import { addSource, configState } from "@/store/useConfigStore";
+import { addSource, configState } from "@/stores/useConfigStore";
 
 const form = proxy({
   label: {

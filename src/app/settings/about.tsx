@@ -4,7 +4,7 @@ import { View, ScrollView } from "react-native";
 import { openURL } from "expo-linking";
 import { appVersion } from "@/services/info";
 import { useSnapshot } from "valtio";
-import { configState } from "@/store/useConfigStore";
+import { configState } from "@/stores/useConfigStore";
 
 export default function () {
   return (
