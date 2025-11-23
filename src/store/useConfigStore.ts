@@ -91,11 +91,9 @@ const save = () => {
 const init = () => {
   const res = storage.getItem("config");
 
-  if (!res) {
-    return;
+  if (res) {
+    Object.assign(configState, JSON.parse(res));
   }
-
-  Object.assign(configState, JSON.parse(res));
 
   //自动保存配置
   subscribe(configState, () => {
