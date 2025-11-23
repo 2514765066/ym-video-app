@@ -8,13 +8,13 @@ export type RadioProps = {
 export default function ({ active, height }: RadioProps) {
   return (
     <View
-      className={`flex-center aspect-square rounded-full border-main-dark2 ${active ? "bg-main" : "border"}`}
+      className={`flex-center aspect-square rounded-full border-main-dark2 ${active ? "bg-primary" : "border"}`}
       style={{
         height,
       }}
     >
       <View
-        className="aspect-square rounded-full bg-222"
+        className={`aspect-square rounded-full ${active ? "bg-white" : "bg-222"}`}
         style={{
           height: height / 2,
         }}

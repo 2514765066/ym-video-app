@@ -25,7 +25,7 @@ export default function Switch({ active, height, onPress }: Props) {
   }));
   return (
     <Pressable
-      className={`rounded-full ${active ? "bg-main" : "bg-444"}`}
+      className={`rounded-full ${active ? "bg-primary" : "bg-444"}`}
       style={{
         padding: 2.5,
         width: height * 1.8,
@@ -34,9 +34,7 @@ export default function Switch({ active, height, onPress }: Props) {
       onPress={onPress}
     >
       <Animated.View
-        className={`h-full aspect-square rounded-full ${
-          active ? "bg-222" : "bg-main"
-        }`}
+        className={`h-full aspect-square rounded-full bg-white elevation`}
         style={animatedStyle}
       />
     </Pressable>

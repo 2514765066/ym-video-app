@@ -41,6 +41,8 @@ type ItemProps = {
 
   rightVisible?: boolean;
 
+  labelClassName?: string;
+
   onPress?: () => void;
   onLongPress?: () => void;
 };
@@ -50,6 +52,7 @@ export function GroupItem({
   sub,
   icon,
   rightVisible,
+  labelClassName,
   onPress,
   onLongPress,
 }: ItemProps) {
@@ -62,7 +65,9 @@ export function GroupItem({
     >
       {icon && <Icon name={icon} size={22} />}
 
-      <Text className="mr-auto text-main text-lg">{label}</Text>
+      <Text className={`${labelClassName} mr-auto text-main text-lg`}>
+        {label}
+      </Text>
 
       {typeof sub == "string" ? <Text className="text-sub">{sub}</Text> : sub}
 

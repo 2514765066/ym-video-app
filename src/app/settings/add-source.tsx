@@ -138,7 +138,7 @@ export default function () {
 
           <View className="mt-auto pb-2 items-center">
             <TouchableOpacity
-              className="w-3/4 h-12 flex-center rounded-full bg-main"
+              className="w-1/2 h-12 flex-center rounded-full bg-primary"
               style={{
                 boxShadow: [
                   {
@@ -151,7 +151,7 @@ export default function () {
               }}
               onPress={handleSubmit}
             >
-              <Text className="text-222 font-medium">添加</Text>
+              <Text className="text-white font-medium">添加</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

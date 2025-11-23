@@ -78,9 +78,8 @@ function ResetOption() {
 
   return (
     <GroupItem
-      label="重置"
-      icon="remove"
-      sub="删除所有数据"
+      label="清空软件数据"
+      labelClassName="text-red-400"
       onPress={handlePress}
     />
   );
