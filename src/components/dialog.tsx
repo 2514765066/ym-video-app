@@ -5,6 +5,8 @@ import { proxy, useSnapshot } from "valtio";
 const state = proxy({
   label: "",
   content: "",
+  confirmLabel: "",
+  cancelLabel: "",
   visible: false,
 
   confirm: () => {},
@@ -14,27 +16,47 @@ const state = proxy({
 interface ConfirmOption {
   label: string;
   content: string;
+
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
-export const confirm = ({ label, content }: ConfirmOption) => {
+export const confirm = ({
+  label,
+  content,
+  confirmLabel,
+  cancelLabel,
+}: ConfirmOption) => {
   const { promise, reject, resolve } = withResolvers<boolean>();
 
-  state.label = label;
-  state.content = content;
-  state.visible = true;
-  state.confirm = () => {
-    resolve(true);
-  };
-  state.cancel = () => {
-    reject(false);
-    state.visible = false;
-  };
+  Object.assign(state, {
+    label,
+    content,
+    visible: true,
+    confirmLabel: confirmLabel,
+    cancelLabel: cancelLabel,
+    confirm: () => {
+      resolve(true);
+    },
+    cancel: () => {
+      reject(false);
+      state.visible = false;
+    },
+  });
 
   return promise;
 };
 
 export default function () {
-  const { label, content, visible, cancel, confirm } = useSnapshot(state);
+  const {
+    label,
+    content,
+    visible,
+    cancelLabel,
+    confirmLabel,
+    cancel,
+    confirm,
+  } = useSnapshot(state);
 
   if (!visible) {
     return;
@@ -72,11 +94,11 @@ export default function () {
             className="flex-1 flex-center border-r border-border"
             onPress={confirm}
           >
-            <Text className="text-primary">确定</Text>
+            <Text className="text-primary">{confirmLabel || "确定"}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity className="flex-1 flex-center" onPress={cancel}>
-            <Text className="text-primary">取消</Text>
+            <Text className="text-primary">{cancelLabel || "取消"}</Text>
           </TouchableOpacity>
         </View>
       </View>

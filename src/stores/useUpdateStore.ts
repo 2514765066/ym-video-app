@@ -149,8 +149,9 @@ export const download = async () => {
   if (file.md5 == updateState.updateInfo.md5) {
     updateState.downloadStatus = "downloaded";
 
-    install(file.uri);
-    return;
+    return () => {
+      install(file.uri);
+    };
   }
 
   if (file.exists) {
@@ -175,8 +176,9 @@ export const download = async () => {
   if (res?.status == 200) {
     updateState.downloadStatus = "downloaded";
 
-    install(res.uri);
-    return;
+    return () => {
+      install(res.uri);
+    };
   }
 
   updateState.downloadStatus = "failed";

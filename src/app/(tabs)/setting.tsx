@@ -11,6 +11,7 @@ import { checkUpdate, download, updateState } from "@/stores/useUpdateStore";
 import { getTimeDiffLabel } from "@/utils/time";
 import { configState } from "@/stores/useConfigStore";
 import useLoading from "@/hooks/useLoading";
+import * as dialog from "@/components/dialog";
 
 export default function () {
   return (
@@ -94,7 +95,23 @@ function UpdateOption() {
       return;
     }
 
-    await download();
+    const install = await download();
+
+    if (!install) {
+      return;
+    }
+
+    try {
+      await dialog.confirm({
+        label: "更新版本",
+        content: "下载完成是否安装?",
+        confirmLabel: "安装",
+      });
+
+      install();
+    } catch {
+      return;
+    }
   });
 
   const subLabel = useMemo(() => {
@@ -125,7 +142,7 @@ function AboutOption() {
     <GroupItem
       label="关于"
       icon="about"
-      sub={`v${appVersion}`}
+      sub={appVersion}
       rightVisible={true}
       onPress={() => router.push("/settings/about")}
     />
