@@ -47,6 +47,8 @@ export default function () {
               },
 
               onPress(label) {
+                moreRef.current?.close();
+
                 removeSource(label);
               },
             },
@@ -60,12 +62,20 @@ export default function () {
 function Item(props: Source) {
   const { selectedSource } = useSnapshot(configState);
 
+  const handleLongPress = () => {
+    if (props.label == selectedSource.label) {
+      return;
+    }
+
+    moreRef.current?.open(props.label);
+  };
+
   return (
     <GroupItem
       label={props.label}
-      sub={<Radio height={18} active={props.url == selectedSource.url} />}
+      sub={<Radio height={18} active={props.label == selectedSource.label} />}
       onPress={() => setSource(props)}
-      onLongPress={() => moreRef.current?.open(props.label)}
+      onLongPress={handleLongPress}
     />
   );
 }

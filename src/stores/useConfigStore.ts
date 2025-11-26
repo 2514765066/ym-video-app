@@ -70,7 +70,7 @@ export const addSource = (item: Source) => {
 
 //移除源
 export const removeSource = (label: string) => {
-  configState.sources = configState.sources.filter(item => item.label == label);
+  configState.sources = configState.sources.filter(item => item.label != label);
 };
 
 //更新仓库
