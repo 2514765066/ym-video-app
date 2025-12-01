@@ -6,7 +6,7 @@
     "prebuild": "expo prebuild",
     "dev": "pnpm prebuild && expo run:android",
     "build": "pnpm prebuild && eas build --profile production --platform android",
-    "release": "node ./scripts/publish.js",
+    "release": "node ./scripts/publish.mjs",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "check": "npx expo-doctor"
@@ -62,7 +62,7 @@
     "prettier-plugin-tailwindcss": "0.5.11",
     "tailwindcss": "3.4.17",
     "typescript": "~5.9.2",
-    "ym-publish": "^1.2.1"
+    "ym-publish": "^1.4.1"
   },
   "expo": {
     "doctor": {
