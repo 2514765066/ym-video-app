@@ -8,7 +8,7 @@ import eventEmitter from "@/hooks/eventEmitter";
 import Icon from "@/components/icon";
 import { rateStore } from "../store/useRate";
 import { Loading } from "@/components/loading";
-import { videoStore } from "../store/useVideo";
+import { setScale, videoStore } from "../store/useVideo";
 import { play, playStore } from "../store/usePlay";
 
 const tpyeMap = {
@@ -51,6 +51,8 @@ export default function () {
       {visible && tpyeMap[type]}
 
       <PlayTip />
+
+      <ScaleTip />
     </View>
   );
 }
@@ -161,6 +163,30 @@ function PlayTip() {
         stroke="rgba(0,0,0,0.02)"
         strokeWidth={0.5}
       />
+    </Pressable>
+  );
+}
+
+function ScaleTip() {
+  const { scale } = useSnapshot(videoStore);
+
+  const handleRestore = () => {
+    setScale(1);
+  };
+
+  if (scale == 1) {
+    return null;
+  }
+
+  return (
+    <Pressable
+      className="px-4 py-2 absolute bottom-4 rounded-xl"
+      style={{
+        backgroundColor: "rgba(25,25,25,0.5)",
+      }}
+      onPress={handleRestore}
+    >
+      <Text className="text-main">还原屏幕</Text>
     </Pressable>
   );
 }

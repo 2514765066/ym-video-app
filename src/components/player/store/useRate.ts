@@ -43,7 +43,7 @@ export const rateStore = proxy({
 });
 
 //设置倍速
-export const updateRate = (value: number) => {
+export const setRate = (value: number) => {
   rateStore.rate = value;
 };
 

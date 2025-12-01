@@ -7,14 +7,13 @@ import { progressStore, resetProgress, seekTo } from "../store/useProgress";
 import { rateStore } from "../store/useRate";
 import { volumeStore } from "../store/useVolume";
 import useM3u8 from "../hooks/useM3u8";
-import { updateLoading } from "../store/useVideo";
+import { setLoading } from "../store/useVideo";
 
 export default function () {
   const { isPlay } = useSnapshot(playStore);
   const { rate } = useSnapshot(rateStore);
   const { volume } = useSnapshot(volumeStore);
   const { selectedHistory, selectedProgress } = useSnapshot(historyState);
-
   const { uri } = useM3u8(selectedHistory.url[selectedHistory.history].url, [
     selectedHistory.history,
   ]);
@@ -45,10 +44,11 @@ export default function () {
     progressStore.currentTime = currentTime;
   };
 
+  //加载完成
   const onLoadStart = () => {
     resetProgress();
 
-    updateLoading(true);
+    setLoading(true);
   };
 
   if (!uri) {
@@ -76,7 +76,7 @@ export default function () {
       resizeMode="contain"
       onLoad={onLoad}
       onProgress={onProgress}
-      onBuffer={({ isBuffering }) => updateLoading(isBuffering)}
+      onBuffer={({ isBuffering }) => setLoading(isBuffering)}
       onLoadStart={onLoadStart}
     />
   );

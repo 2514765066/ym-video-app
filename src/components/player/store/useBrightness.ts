@@ -5,7 +5,7 @@ export const brightnessStore = proxy({
   brightness: 50,
 });
 
-export const updateBrightness = (delta: number) => {
+export const setBrightness = (delta: number) => {
   brightnessStore.brightness = Math.min(
     100,
     Math.max(0, brightnessStore.brightness - delta)

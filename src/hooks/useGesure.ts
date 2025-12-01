@@ -71,3 +71,8 @@ export const useTap = () => {
 export const useDoubleTap = () => {
   return Gesture.Tap().runOnJS(true).numberOfTaps(2);
 };
+
+//捏合
+export const usePinch = () => {
+  return Gesture.Pinch().runOnJS(true);
+};

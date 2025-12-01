@@ -12,9 +12,43 @@ import Rate from "./components/rate";
 import List from "./components/list";
 import { restoreSystemBrightnessAsync } from "expo-brightness";
 import { resetProgress } from "./store/useProgress";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+import { usePinch } from "@/hooks/useGesure";
+import { setScale, videoStore } from "./store/useVideo";
+import { subscribeKey } from "valtio/utils";
 
 export default function () {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
+
+  //缩放
+  const scale = useSharedValue(1);
+
+  //开始缩放
+  const startScale = useSharedValue(0);
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const pinchScale = usePinch()
+    .onStart(() => {
+      startScale.value = scale.value;
+    })
+    .onUpdate(e => {
+      scale.value = startScale.value * e.scale;
+    })
+    .onEnd(e => {
+      setScale(startScale.value * e.scale);
+    });
+
+  subscribeKey(videoStore, "scale", val => {
+    if (val == 1) {
+      scale.value = 1;
+    }
+  });
 
   //初始化
   useEffect(() => {
@@ -55,19 +89,21 @@ export default function () {
 
   return (
     <View className="flex-1 flex-center relative bg-black">
-      <Tip />
-
-      <Rate />
-
       <List />
 
-      <Event />
+      <Rate />
 
       <Top />
 
       <Bottom />
 
-      <Video />
+      <Tip />
+
+      <Event pinchScale={pinchScale} />
+
+      <Animated.View className="wh-full" style={animatedStyles}>
+        <Video />
+      </Animated.View>
     </View>
   );
 }

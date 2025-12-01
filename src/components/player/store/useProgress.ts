@@ -26,7 +26,7 @@ export const hideSeek = () => {
 };
 
 //更新播放进度
-export const updateSeek = (ratio: number) => {
+export const setSeek = (ratio: number) => {
   const currentRatio = progressStore.currentTime / progressStore.duration;
 
   const newRatio = currentRatio + ratio / 4;

@@ -1,6 +1,10 @@
 import { Dimensions, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { updateBrightness } from "../store/useBrightness";
+import {
+  Gesture,
+  GestureDetector,
+  PinchGesture,
+} from "react-native-gesture-handler";
+import { setBrightness } from "../store/useBrightness";
 import { toggleControl } from "../store/useControl";
 import { pause, play, togglePlay } from "../store/usePlay";
 import {
@@ -8,10 +12,10 @@ import {
   progressStore,
   seekTo,
   showSeek,
-  updateSeek,
+  setSeek,
 } from "../store/useProgress";
 import { openRate, resetRate } from "../store/useRate";
-import { updateVolume } from "../store/useVolume";
+import { setVolume } from "../store/useVolume";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSnapshot } from "valtio";
 import eventEmitter from "@/hooks/eventEmitter";
@@ -21,11 +25,15 @@ import {
   useLongPress,
   usePan,
   useTap,
-} from "@/hooks/usePanGesure";
+} from "@/hooks/useGesure";
+
+type Props = {
+  pinchScale: PinchGesture;
+};
 
 const { width } = Dimensions.get("window");
 
-export default function () {
+export default function ({ pinchScale }: Props) {
   const { left, right } = useSafeAreaInsets();
   const { seekRatio, duration } = useSnapshot(progressStore);
 
@@ -46,7 +54,7 @@ export default function () {
     .onStart(pause)
     .onUpdate(e => {
       const ratio = e.translationX / (width - Math.max(left, right) * 2);
-      updateSeek(ratio);
+      setSeek(ratio);
       showSeek();
     })
     .onEnd(() => {
@@ -58,7 +66,7 @@ export default function () {
   //滑动手势 音量
   const panVolume = useDeltaPan(
     ({ deltaY }) => {
-      updateVolume(deltaY);
+      setVolume(deltaY);
 
       eventEmitter.emit("player:volume:show");
     },
@@ -70,7 +78,7 @@ export default function () {
   //滑动手势 亮度
   const panBright = useDeltaPan(
     ({ deltaY }) => {
-      updateBrightness(deltaY);
+      setBrightness(deltaY);
 
       eventEmitter.emit("player:brightness:show");
     },
@@ -82,6 +90,7 @@ export default function () {
   //容器手势
   const containerGesture = Gesture.Exclusive(
     longPress,
+    pinchScale,
     panProgres,
     doubleTap,
     singleTap

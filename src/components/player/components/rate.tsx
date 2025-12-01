@@ -4,7 +4,7 @@ import {
   Pressable,
   GestureResponderEvent,
 } from "react-native";
-import { rateList, rateStore, updateRate } from "../store/useRate";
+import { rateList, rateStore, setRate } from "../store/useRate";
 import { useSnapshot } from "valtio";
 import { FlatList } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
@@ -72,7 +72,7 @@ function Item({ data }: ItemProps) {
             ? "rgba(255,255,255,0.81)"
             : "rgba(255,255,255,0.2)",
       }}
-      onPress={() => updateRate(data.value)}
+      onPress={() => setRate(data.value)}
     >
       <Text
         className={`text-xl ${rate == data.value ? "text-333" : "text-main"}`}
