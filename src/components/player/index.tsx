@@ -1,4 +1,4 @@
-import useFullscreen from "@/hooks/useFullscreen";
+import { enterFullscreen, exitFullscreen } from "@/utils/fullscreen";
 import { save, saveTime } from "@/stores/useHistoryStore";
 import { useEffect } from "react";
 import { AppState, View } from "react-native";
@@ -21,8 +21,6 @@ import { setScale, videoStore } from "./store/useVideo";
 import { subscribeKey } from "valtio/utils";
 
 export default function () {
-  const { enterFullscreen, exitFullscreen } = useFullscreen();
-
   //缩放
   const scale = useSharedValue(1);
 

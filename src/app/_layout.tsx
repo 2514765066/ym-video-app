@@ -10,6 +10,7 @@ import { useNetworkState } from "expo-network";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import Dialog from "@/components/dialog";
+import { exitFullscreen } from "@/utils/fullscreen";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -23,6 +24,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     SplashScreen.hideAsync();
+
+    exitFullscreen();
   }, []);
 
   if (networkState.isInternetReachable === false) {
