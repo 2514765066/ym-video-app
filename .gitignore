@@ -29,3 +29,5 @@ yarn-error.*
 nativewind-env.d.ts
 
 release
+
+src/assets/test.mp4
