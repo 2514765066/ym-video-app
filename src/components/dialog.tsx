@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { proxy, useSnapshot } from "valtio";
 
 const state = proxy({
-  label: "",
+  title: "",
   content: "",
   confirmLabel: "",
   cancelLabel: "",
@@ -14,7 +14,7 @@ const state = proxy({
 });
 
 interface ConfirmOption {
-  label: string;
+  title: string;
   content: string;
 
   confirmLabel?: string;
@@ -22,25 +22,26 @@ interface ConfirmOption {
 }
 
 export const confirm = ({
-  label,
+  title,
   content,
   confirmLabel,
   cancelLabel,
 }: ConfirmOption) => {
-  const { promise, reject, resolve } = withResolvers<boolean>();
+  const { promise, resolve } = withResolvers<boolean>();
 
   Object.assign(state, {
-    label,
+    title,
     content,
     visible: true,
     confirmLabel: confirmLabel,
     cancelLabel: cancelLabel,
     confirm: () => {
+      state.visible = false;
       resolve(true);
     },
     cancel: () => {
-      reject(false);
       state.visible = false;
+      resolve(false);
     },
   });
 
@@ -49,7 +50,7 @@ export const confirm = ({
 
 export default function () {
   const {
-    label,
+    title,
     content,
     visible,
     cancelLabel,
@@ -84,7 +85,7 @@ export default function () {
         }}
       >
         <View className="p-4 gap-4">
-          <Text className="text-main text-center  text-lg">{label}</Text>
+          <Text className="text-main text-center  text-lg">{title}</Text>
 
           <Text className="text-main text-center">{content}</Text>
         </View>

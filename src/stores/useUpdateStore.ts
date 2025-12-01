@@ -1,27 +1,20 @@
 import { appVersion } from "@/services/info";
-import { formatVersion } from "@/utils/format";
-import { Paths, File } from "expo-file-system";
-import {
-  createDownloadResumable,
-  deleteAsync,
-  getContentUriAsync,
-} from "expo-file-system/legacy";
 import { proxy } from "valtio";
-import { startActivityAsync } from "expo-intent-launcher";
 import storage from "@/services/storage";
 import { configState } from "./useConfigStore";
 import { getDayDiff } from "@/utils/time";
+import {
+  checkUpdate as _checkUpdate,
+  downloadAndInstall,
+} from "@/utils/update";
+import { confirm } from "@/components/dialog";
 
 type UpdateState = {
   lastUpdateTime: number;
 
   updateProgress: number;
 
-  updateInfo: {
-    version: string;
-    downloadUrl: string;
-    md5: string;
-  };
+  updateVersion: string;
 
   updateStatus:
     | "init"
@@ -29,8 +22,7 @@ type UpdateState = {
     | "update-available"
     | "update-not-available"
     | "downloading"
-    | "downloaded"
-    | "error";
+    | "downloaded";
 };
 
 export const updateState = proxy<UpdateState>({
@@ -41,37 +33,11 @@ export const updateState = proxy<UpdateState>({
   updateProgress: 0,
 
   //更新信息
-  updateInfo: {
-    version: "",
-    downloadUrl: "",
-    md5: "",
-  },
+  updateVersion: "",
 
   //更新状态
   updateStatus: "init",
 });
-
-interface UpdateInfo {
-  assets: {
-    browser_download_url: string;
-    name: string;
-  }[];
-  name: string;
-  tag_name: string;
-}
-
-interface UpdateConfig {
-  md5: string;
-  version: string;
-  name: string;
-}
-
-//获取配置
-const getJson = async <T>(url: string): Promise<T> => {
-  const response = await fetch(url);
-
-  return await response.json();
-};
 
 //检查更新
 export const checkUpdate = async () => {
@@ -79,121 +45,60 @@ export const checkUpdate = async () => {
     return;
   }
 
-  try {
-    updateState.updateStatus = "checking";
+  updateState.updateStatus = "checking";
 
-    save();
-
-    const response = await fetch(configState.selectedRepo.updateUrl);
-
-    if (response.status != 200) {
-      updateState.updateStatus = "update-not-available";
-      return;
-    }
-
-    const updateInfo: UpdateInfo = await response.json();
-
-    //找到对应的配置信息
-    const latestConfig = updateInfo.assets.find(
-      item => item.name == "latest.json"
-    );
-
-    //没有配置
-    if (!latestConfig) {
-      updateState.updateStatus = "update-not-available";
-      return;
-    }
-
-    const { md5, version, name } = await getJson<UpdateConfig>(
-      latestConfig.browser_download_url
-    );
-
-    //不需要更新
-    if (formatVersion(appVersion) >= formatVersion(version)) {
-      updateState.updateStatus = "update-not-available";
-      return;
-    }
-
-    //找到对应的安装包
-    const apkInfo = updateInfo.assets.find(item => item.name == name);
-
-    //没有安装包
-    if (!apkInfo) {
-      updateState.updateStatus = "update-not-available";
-      return;
-    }
-
-    updateState.updateInfo = {
-      version,
-      downloadUrl: apkInfo.browser_download_url,
-      md5,
-    };
-
-    updateState.updateStatus = "update-available";
-
-    return true;
-  } catch (e) {
-    console.error(e);
-
-    updateState.updateStatus = "error";
-  }
-};
-
-//下载
-export const download = async () => {
-  updateState.updateStatus = "downloading";
-
-  const pathname = updateState.updateInfo.downloadUrl.split("/").at(-1)!;
-
-  const file = new File(Paths.cache, pathname);
-
-  if (file.md5 == updateState.updateInfo.md5) {
-    updateState.updateStatus = "downloaded";
-
-    return () => {
-      install(file.uri);
-    };
-  }
-
-  if (file.exists) {
-    await deleteAsync(file.uri);
-  }
-
-  const downloadResumable = createDownloadResumable(
-    updateState.updateInfo.downloadUrl,
-    file.uri,
-    {},
-    downloadProgress => {
-      const progress =
-        downloadProgress.totalBytesWritten /
-        downloadProgress.totalBytesExpectedToWrite;
-
-      updateState.updateProgress = Math.floor(progress * 100);
-    }
+  const res = await _checkUpdate(
+    configState.selectedRepo.updateUrl,
+    appVersion
   );
 
-  const res = await downloadResumable.downloadAsync();
+  //没有更新
+  if (res == false) {
+    save();
 
-  if (res?.status == 200) {
-    updateState.updateStatus = "downloaded";
+    updateState.updateStatus = "update-not-available";
 
-    return () => {
-      install(res.uri);
-    };
+    return;
   }
 
-  updateState.updateStatus = "error";
-};
+  updateState.updateVersion = res;
 
-//安装
-export const install = async (uri: string) => {
-  const contentUri = await getContentUriAsync(uri);
+  updateState.updateStatus = "update-available";
 
-  await startActivityAsync("android.intent.action.VIEW", {
-    data: contentUri,
-    flags: 1,
-    type: "application/vnd.android.package-archive",
+  const checkResult = await confirm({
+    title: "更新版本",
+    content: `发现新版本${res},是否更新?`,
   });
+
+  //不更新
+  if (!checkResult) {
+    updateState.updateStatus = "init";
+    return;
+  }
+
+  updateState.updateStatus = "downloading";
+
+  const install = await downloadAndInstall(progress => {
+    updateState.updateProgress = progress;
+  });
+
+  updateState.updateStatus = "downloaded";
+
+  //安装
+  const installResult = await confirm({
+    title: "安装更新",
+    content: "更新下载完成是否安装",
+  });
+
+  //不安装
+  if (!installResult) {
+    updateState.updateStatus = "init";
+    return;
+  }
+
+  save();
+
+  install();
 };
 
 //保存
