@@ -4,26 +4,17 @@ import TitleBar, { BackControl } from "@/components/title-bar";
 import { View, ScrollView } from "react-native";
 import { useSnapshot } from "valtio";
 import { configState, setRepo } from "@/stores/useConfigStore";
-import { IconName } from "@/components/icon";
+import { Repo } from "@/type";
 
-type Source = {
-  label: string;
-  icon: IconName;
-  url: string;
-  updateUrl: string;
-};
-
-const sources: Source[] = [
+export const repos = [
   {
     label: "Gitee",
-    icon: "gitee",
     url: "https://gitee.com/yxingyus/ym-video-app",
     updateUrl:
       "https://gitee.com/api/v5/repos/yxingyus/ym-video-app/releases/latest",
   },
   {
     label: "GitHub",
-    icon: "github",
     url: "https://github.com/2514765066/ym-video-app",
     updateUrl:
       "https://api.github.com/repos/2514765066/ym-video-app/releases/latest",
@@ -39,20 +30,19 @@ export default function () {
         contentContainerClassName="p-4"
         showsVerticalScrollIndicator={false}
       >
-        <Group data={sources} renderItem={({ item }) => <Item {...item} />} />
+        <Group data={repos} renderItem={({ item }) => <Item {...item} />} />
       </ScrollView>
     </View>
   );
 }
 
-function Item(props: Source) {
-  const { repo } = useSnapshot(configState);
+function Item(props: Repo) {
+  const { selectedRepo } = useSnapshot(configState);
 
   return (
     <GroupItem
       label={props.label}
-      icon={props.icon}
-      sub={<Radio height={18} active={props.url == repo.url} />}
+      sub={<Radio height={18} active={props.url == selectedRepo.url} />}
       onPress={() => setRepo(props)}
     />
   );

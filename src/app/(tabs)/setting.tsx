@@ -8,7 +8,7 @@ import { useSnapshot } from "valtio";
 import { useMemo } from "react";
 import { appVersion } from "@/services/info";
 import { checkUpdate, download, updateState } from "@/stores/useUpdateStore";
-import { getTimeDiffLabel } from "@/utils/time";
+import { getDayDiffLabel } from "@/utils/time";
 import { configState } from "@/stores/useConfigStore";
 import useLoading from "@/hooks/useLoading";
 import * as dialog from "@/components/dialog";
@@ -75,17 +75,16 @@ function GeneralOption() {
 }
 
 function UpdateOption() {
-  const { lastUpdateTime, updateStatus, downloadStatus, updateProgress } =
+  const { lastUpdateTime, updateStatus, updateProgress } =
     useSnapshot(updateState);
 
   const map: Record<string, string> = {
-    error: "网络错误,请重试",
     checking: "正在检查更新",
+    "update-available": "发现更新",
     "update-not-available": "已是最新版",
-
     downloading: `下载中: ${updateProgress}%`,
-    downloaded: "正在安装",
-    failed: "下载失败",
+    downloaded: "下载完成",
+    error: "出错了,请重试",
   };
 
   const handleUpdate = useLoading(async () => {
@@ -119,12 +118,8 @@ function UpdateOption() {
       return map[updateStatus];
     }
 
-    if (map[downloadStatus]) {
-      return map[downloadStatus];
-    }
-
-    return `${getTimeDiffLabel(lastUpdateTime, Date.now())}前检查过`;
-  }, [updateStatus, downloadStatus, updateProgress]);
+    return `${getDayDiffLabel(lastUpdateTime, Date.now())}前检查过`;
+  }, [updateStatus, updateProgress]);
 
   return (
     <GroupItem

@@ -1,11 +1,8 @@
 import storage from "@/services/storage";
-import { Source } from "@/type";
+import { Repo, Source } from "@/type";
 import { proxy, subscribe } from "valtio";
 
 export const configState = proxy({
-  //自动更新
-  autoUpdate: false,
-
   //源名称
   selectedSource: {
     label: "量子资源",
@@ -13,7 +10,7 @@ export const configState = proxy({
   },
 
   //仓库名称
-  repo: {
+  selectedRepo: {
     label: "Gitee",
     url: "https://gitee.com/yxingyus/ym-video-app",
     updateUrl:
@@ -53,11 +50,6 @@ export const configState = proxy({
   ],
 });
 
-//切换自动更新
-export const toggleAutoUpdate = () => {
-  configState.autoUpdate = !configState.autoUpdate;
-};
-
 //更新源名称
 export const setSource = (option: { label: string; url: string }) => {
   configState.selectedSource = option;
@@ -74,12 +66,8 @@ export const removeSource = (label: string) => {
 };
 
 //更新仓库
-export const setRepo = (option: {
-  label: string;
-  url: string;
-  updateUrl: string;
-}) => {
-  configState.repo = option;
+export const setRepo = (option: Repo) => {
+  configState.selectedRepo = option;
 };
 
 //保存

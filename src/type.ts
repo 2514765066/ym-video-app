@@ -108,3 +108,10 @@ export type Source = {
   label: string;
   url: string;
 };
+
+//仓库
+export type Repo = {
+  label: string;
+  url: string;
+  updateUrl: string;
+};

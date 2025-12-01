@@ -16,19 +16,19 @@ export const getTimePeriod = () => {
 };
 
 //获取时间差
-export const getTimeDiff = (start: number | Dayjs, end: number | Dayjs) => {
+export const getDayDiff = (start: number | Dayjs, end: number | Dayjs) => {
   const d1 = dayjs(start);
   const d2 = dayjs(end);
 
-  return d2.diff(d1, "day", true); // true 表示保留小数
+  return d2.diff(d1, "day");
 };
 
 //获取时间差标题
-export const getTimeDiffLabel = (start: number | Date, end: number | Date) => {
+export const getDayDiffLabel = (start: number | Date, end: number | Date) => {
   const d1 = dayjs(start);
   const d2 = dayjs(end);
 
-  const diffDays = getTimeDiff(d1, d2);
+  const diffDays = getDayDiff(d1, d2);
 
   if (diffDays >= 1) {
     return `${Math.floor(diffDays)}天`;

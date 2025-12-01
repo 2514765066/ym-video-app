@@ -10,7 +10,7 @@ import { proxy } from "valtio";
 import { startActivityAsync } from "expo-intent-launcher";
 import storage from "@/services/storage";
 import { configState } from "./useConfigStore";
-import { getTimeDiff } from "@/utils/time";
+import { getDayDiff } from "@/utils/time";
 
 type UpdateState = {
   lastUpdateTime: number;
@@ -28,9 +28,9 @@ type UpdateState = {
     | "checking"
     | "update-available"
     | "update-not-available"
+    | "downloading"
+    | "downloaded"
     | "error";
-
-  downloadStatus: "init" | "downloading" | "downloaded" | "failed";
 };
 
 export const updateState = proxy<UpdateState>({
@@ -49,9 +49,6 @@ export const updateState = proxy<UpdateState>({
 
   //更新状态
   updateStatus: "init",
-
-  //下载状态
-  downloadStatus: "init",
 });
 
 interface UpdateInfo {
@@ -78,12 +75,16 @@ const getJson = async <T>(url: string): Promise<T> => {
 
 //检查更新
 export const checkUpdate = async () => {
+  if (updateState.updateStatus != "init") {
+    return;
+  }
+
   try {
     updateState.updateStatus = "checking";
 
     save();
 
-    const response = await fetch(configState.repo.updateUrl);
+    const response = await fetch(configState.selectedRepo.updateUrl);
 
     if (response.status != 200) {
       updateState.updateStatus = "update-not-available";
@@ -140,14 +141,14 @@ export const checkUpdate = async () => {
 
 //下载
 export const download = async () => {
-  updateState.downloadStatus = "downloading";
+  updateState.updateStatus = "downloading";
 
   const pathname = updateState.updateInfo.downloadUrl.split("/").at(-1)!;
 
   const file = new File(Paths.cache, pathname);
 
   if (file.md5 == updateState.updateInfo.md5) {
-    updateState.downloadStatus = "downloaded";
+    updateState.updateStatus = "downloaded";
 
     return () => {
       install(file.uri);
@@ -174,14 +175,14 @@ export const download = async () => {
   const res = await downloadResumable.downloadAsync();
 
   if (res?.status == 200) {
-    updateState.downloadStatus = "downloaded";
+    updateState.updateStatus = "downloaded";
 
     return () => {
       install(res.uri);
     };
   }
 
-  updateState.downloadStatus = "failed";
+  updateState.updateStatus = "error";
 };
 
 //安装
@@ -214,10 +215,9 @@ const init = () => {
     updateState.lastUpdateTime = Date.now();
   }
 
-  if (configState.autoUpdate) {
-    if (getTimeDiff(updateState.lastUpdateTime, Date.now()) > 3) {
-      checkUpdate();
-    }
+  //3天自动检测更新
+  if (getDayDiff(updateState.lastUpdateTime, Date.now()) > 3) {
+    checkUpdate();
   }
 };
 
