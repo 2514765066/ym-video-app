@@ -73,14 +73,14 @@ function GeneralOption() {
 }
 
 function UpdateOption() {
-  const { lastUpdateTime, updateStatus, updateProgress } =
+  const { lastUpdateTime, updateStatus, downloadProgress } =
     useSnapshot(updateState);
 
   const map: Record<string, string> = {
     checking: "正在检查更新",
     "update-available": "发现更新",
     "update-not-available": "已是最新版",
-    downloading: `下载中: ${updateProgress}%`,
+    downloading: `下载中: ${downloadProgress}%`,
     downloaded: "下载完成",
   };
 
@@ -90,7 +90,7 @@ function UpdateOption() {
     }
 
     return `${getDayDiffLabel(lastUpdateTime, Date.now())}前检查过`;
-  }, [updateStatus, updateProgress]);
+  }, [updateStatus, downloadProgress]);
 
   return (
     <GroupItem

@@ -12,7 +12,7 @@ import { confirm } from "@/components/dialog";
 type UpdateState = {
   lastUpdateTime: number;
 
-  updateProgress: number;
+  downloadProgress: number;
 
   updateVersion: string;
 
@@ -30,7 +30,7 @@ export const updateState = proxy<UpdateState>({
   lastUpdateTime: 0,
 
   //更新进度
-  updateProgress: 0,
+  downloadProgress: 0,
 
   //更新信息
   updateVersion: "",
@@ -79,7 +79,7 @@ export const checkUpdate = async () => {
   updateState.updateStatus = "downloading";
 
   const install = await downloadAndInstall(progress => {
-    updateState.updateProgress = progress;
+    updateState.downloadProgress = progress;
   });
 
   updateState.updateStatus = "downloaded";

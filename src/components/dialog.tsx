@@ -5,8 +5,8 @@ import { proxy, useSnapshot } from "valtio";
 const state = proxy({
   title: "",
   content: "",
-  confirmLabel: "",
-  cancelLabel: "",
+  confirmButtonText: "",
+  cancelButtonText: "",
   visible: false,
 
   confirm: () => {},
@@ -17,24 +17,16 @@ interface ConfirmOption {
   title: string;
   content: string;
 
-  confirmLabel?: string;
-  cancelLabel?: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
 }
 
-export const confirm = ({
-  title,
-  content,
-  confirmLabel,
-  cancelLabel,
-}: ConfirmOption) => {
+export const confirm = (option: ConfirmOption) => {
   const { promise, resolve } = withResolvers<boolean>();
 
   Object.assign(state, {
-    title,
-    content,
+    ...option,
     visible: true,
-    confirmLabel: confirmLabel,
-    cancelLabel: cancelLabel,
     confirm: () => {
       state.visible = false;
       resolve(true);
@@ -53,8 +45,8 @@ export default function () {
     title,
     content,
     visible,
-    cancelLabel,
-    confirmLabel,
+    confirmButtonText,
+    cancelButtonText,
     cancel,
     confirm,
   } = useSnapshot(state);
@@ -95,11 +87,11 @@ export default function () {
             className="flex-1 flex-center border-r border-border"
             onPress={confirm}
           >
-            <Text className="text-primary">{confirmLabel || "确定"}</Text>
+            <Text className="text-primary">{confirmButtonText || "确定"}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity className="flex-1 flex-center" onPress={cancel}>
-            <Text className="text-primary">{cancelLabel || "取消"}</Text>
+            <Text className="text-primary">{cancelButtonText || "取消"}</Text>
           </TouchableOpacity>
         </View>
       </View>

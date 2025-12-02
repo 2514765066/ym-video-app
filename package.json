@@ -5,11 +5,11 @@
   "scripts": {
     "prebuild": "expo prebuild",
     "dev": "pnpm prebuild && expo run:android",
-    "build": "pnpm prebuild && eas build --profile production --platform android",
+    "build": "pnpm check && pnpm prebuild && eas build --profile production --platform android",
     "release": "node ./scripts/publish.mjs",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "check": "npx expo-doctor"
+    "check": "tsc --noEmit && npx expo-doctor"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",

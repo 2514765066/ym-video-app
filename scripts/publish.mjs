@@ -1,6 +1,7 @@
 import { useGiteeReleases, useGithubReleases } from "ym-publish";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { createRequire } from "module";
 
 const __dirname = import.meta.dirname;
 

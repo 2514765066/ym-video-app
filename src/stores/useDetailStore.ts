@@ -21,7 +21,10 @@ export const detailState = proxy<MovieStore>({
     history: 0,
     time: 0,
     progress: [],
-    source: "",
+    source: {
+      label: "",
+      url: "",
+    },
   },
 });
 
