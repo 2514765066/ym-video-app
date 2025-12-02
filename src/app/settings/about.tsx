@@ -30,10 +30,10 @@ function VersionOption() {
 }
 
 function AddressOption() {
-  const { repo } = useSnapshot(configState);
+  const { selectedRepo } = useSnapshot(configState);
 
   const handlePress = () => {
-    openURL(repo.url);
+    openURL(selectedRepo.url);
   };
 
   return (
@@ -47,10 +47,10 @@ function AddressOption() {
 }
 
 function IssueOption() {
-  const { repo } = useSnapshot(configState);
+  const { selectedRepo } = useSnapshot(configState);
 
   const handlePress = () => {
-    openURL(`${repo.url}/issues`);
+    openURL(`${selectedRepo.url}/issues`);
   };
 
   return (
@@ -64,10 +64,10 @@ function IssueOption() {
 }
 
 function UpdateContentOption() {
-  const { repo } = useSnapshot(configState);
+  const { selectedRepo } = useSnapshot(configState);
 
   const handlePress = () => {
-    openURL(`${repo.url}/blob/main/release-note.md`);
+    openURL(`${selectedRepo.url}/blob/main/release-note.md`);
   };
 
   return (
