@@ -49,16 +49,16 @@ function ResetOption() {
   };
 
   const handlePress = async () => {
-    try {
-      await dialog.confirm({
-        title: "确定要重置吗",
-        content: "重置后会清除所有设置项，历史记录，搜索记录",
-      });
+    const res = await dialog.confirm({
+      title: "确定要重置吗？",
+      content: "重置后会清除所有设置项，历史记录，搜索记录",
+    });
 
-      reset();
-    } catch {
+    if (!res) {
       return;
     }
+
+    reset();
   };
 
   return (
