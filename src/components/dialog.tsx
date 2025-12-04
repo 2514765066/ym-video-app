@@ -91,7 +91,7 @@ export default function () {
           </TouchableOpacity>
 
           <TouchableOpacity className="flex-1 flex-center" onPress={cancel}>
-            <Text className="text-primary">{cancelButtonText || "取消"}</Text>
+            <Text className="text-sub">{cancelButtonText || "取消"}</Text>
           </TouchableOpacity>
         </View>
       </View>

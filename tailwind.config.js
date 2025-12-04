@@ -6,25 +6,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "main": "rgba(255,255,255,0.8)",
-
-        "sub": "#888",
+        primary: "rgb(35, 131, 226)",
+        main: "rgba(255,255,255,0.8)",
+        sub: "#888",
+        bg: "#191919",
+        border: "#2a2a2a",
+        changing: "#0CBC4D",
 
         "main-dark1": "rgba(255,255,255,0.6)",
         "main-dark2": "rgba(255,255,255,0.3)",
         "main-dark3": "rgba(255, 255, 255, 0.03)",
 
-        "changing": "#0CBC4D",
         "222": "#222",
         "333": "#333",
         "444": "#444",
-
-        "bg-sub": "#292929",
-
-        primary: "rgb(35, 131, 226)",
-        bg: "#191919",
-        "list-bg": "#202020",
-        border: "#2a2a2a",
       },
       aspectRatio: {
         "2/3": "2/3",
