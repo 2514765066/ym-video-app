@@ -1,5 +1,6 @@
 import { withResolvers } from "@/utils/promise";
-import { View, Text, TouchableOpacity } from "react-native";
+import { useEffect } from "react";
+import { View, Text, TouchableOpacity, BackHandler } from "react-native";
 import { proxy, useSnapshot } from "valtio";
 
 const state = proxy({
@@ -50,6 +51,22 @@ export default function () {
     cancel,
     confirm,
   } = useSnapshot(state);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (state.visible) {
+          state.cancel();
+          return true;
+        }
+
+        return false;
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
 
   if (!visible) {
     return;
