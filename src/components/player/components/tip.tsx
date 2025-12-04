@@ -46,7 +46,7 @@ export default function () {
     <View className="flex-center absolute inset-0 z-20">
       <RateTip />
 
-      {loading && <Loading />}
+      {loading && <Loading color="rgba(255,255,255,0.6)" />}
 
       {visible && tpyeMap[type]}
 

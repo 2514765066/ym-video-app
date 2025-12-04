@@ -43,13 +43,21 @@ export function LoadingGlobal({ mask }: LoadingGlobalProps) {
   );
 }
 
-export function Loading() {
+type LoadingProps = {
+  color?: string;
+  size?: number;
+};
+
+export function Loading({
+  color = "rgba(255,255,255,0.3)",
+  size = 35,
+}: LoadingProps) {
   return (
     <View className="flex-1 flex-center">
       <Icon
         name="loading"
-        size={35}
-        color="rgba(255,255,255,0.3)"
+        size={size}
+        color={color}
         style={{
           animationDuration: 1000,
           animationIterationCount: "infinite",
