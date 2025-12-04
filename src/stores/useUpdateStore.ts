@@ -41,6 +41,30 @@ export const updateState = proxy<UpdateState>({
 
 //检查更新
 export const checkUpdate = async () => {
+  const installUpdate = async () => {
+    //安装
+    const installResult = await confirm({
+      title: "安装更新",
+      content: "更新下载完成是否安装",
+    });
+
+    //不安装
+    if (!installResult) {
+      return;
+    }
+
+    save();
+
+    install();
+  };
+
+  //如果下载完成就直接安装
+  if (updateState.updateStatus == "downloaded") {
+    installUpdate();
+    return;
+  }
+
+  //如果不是初始化就进制检查
   if (updateState.updateStatus != "init") {
     return;
   }
@@ -84,21 +108,7 @@ export const checkUpdate = async () => {
 
   updateState.updateStatus = "downloaded";
 
-  //安装
-  const installResult = await confirm({
-    title: "安装更新",
-    content: "更新下载完成是否安装",
-  });
-
-  //不安装
-  if (!installResult) {
-    updateState.updateStatus = "init";
-    return;
-  }
-
-  save();
-
-  install();
+  installUpdate();
 };
 
 //保存

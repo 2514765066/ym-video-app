@@ -114,7 +114,7 @@ export const downloadUpdate = async (
   const res = await downloadResumable.downloadAsync();
 
   if (res?.status == 200) {
-    return true;
+    return downloadFile.uri;
   }
 
   return false;
