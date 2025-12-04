@@ -1,9 +1,5 @@
 import { Dimensions, View } from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-  PinchGesture,
-} from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { setBrightness } from "../store/useBrightness";
 import { toggleControl } from "../store/useControl";
 import { pause, play, togglePlay } from "../store/usePlay";
@@ -24,16 +20,15 @@ import {
   useDoubleTap,
   useLongPress,
   usePan,
+  usePinch,
   useTap,
 } from "@/hooks/useGesure";
-
-type Props = {
-  pinchScale: PinchGesture;
-};
+import { useSharedValue } from "react-native-reanimated";
+import { scaleSharedValue, setScale } from "../store/useVideo";
 
 const { width } = Dimensions.get("window");
 
-export default function ({ pinchScale }: Props) {
+export default function () {
   const { left, right } = useSafeAreaInsets();
   const { seekRatio, duration } = useSnapshot(progressStore);
 
@@ -87,11 +82,23 @@ export default function ({ pinchScale }: Props) {
     }
   );
 
+  const startScale = useSharedValue(0);
+  const pinchScale = usePinch()
+    .onStart(() => {
+      startScale.value = scaleSharedValue.value;
+    })
+    .onUpdate(e => {
+      scaleSharedValue.value = startScale.value * e.scale;
+    })
+    .onEnd(e => {
+      setScale(startScale.value * e.scale);
+    });
+
   //容器手势
   const containerGesture = Gesture.Exclusive(
     longPress,
-    pinchScale,
     panProgres,
+    pinchScale,
     doubleTap,
     singleTap
   );

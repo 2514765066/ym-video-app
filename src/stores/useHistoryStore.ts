@@ -127,7 +127,7 @@ export const saveTime = () => {
 };
 
 //保存数据
-export const save = () => {
+export const saveHistory = () => {
   db.update(historyState.selectedHistory);
 };
 

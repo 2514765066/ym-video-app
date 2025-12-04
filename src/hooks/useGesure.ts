@@ -52,6 +52,8 @@ interface UsePanOption {
 export const usePan = ({ direction, disable }: UsePanOption) => {
   return Gesture.Pan()
     .runOnJS(true)
+    .minPointers(1)
+    .maxPointers(1)
     .activeOffsetX(direction == "horizontal" ? [-10, 10] : [-1000, 1000])
     .activeOffsetY(direction == "vertical" ? [-10, 10] : [-1000, 1000])
     .enabled(!disable);

@@ -1,5 +1,5 @@
 import { enterFullscreen, exitFullscreen } from "@/utils/fullscreen";
-import { save, saveTime } from "@/stores/useHistoryStore";
+import { saveHistory, saveTime } from "@/stores/useHistoryStore";
 import { useEffect } from "react";
 import { AppState, View } from "react-native";
 import Event from "./components/event";
@@ -12,41 +12,14 @@ import Rate from "./components/rate";
 import List from "./components/list";
 import { restoreSystemBrightnessAsync } from "expo-brightness";
 import { resetProgress } from "./store/useProgress";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated";
-import { usePinch } from "@/hooks/useGesure";
-import { setScale, videoStore } from "./store/useVideo";
-import { subscribeKey } from "valtio/utils";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+
+import { scaleSharedValue } from "./store/useVideo";
 
 export default function () {
-  //缩放
-  const scale = useSharedValue(1);
-
-  //开始缩放
-  const startScale = useSharedValue(0);
-
   const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scaleSharedValue.value }],
   }));
-
-  const pinchScale = usePinch()
-    .onStart(() => {
-      startScale.value = scale.value;
-    })
-    .onUpdate(e => {
-      scale.value = startScale.value * e.scale;
-    })
-    .onEnd(e => {
-      setScale(startScale.value * e.scale);
-    });
-
-  subscribeKey(videoStore, "scale", val => {
-    if (val == 1) {
-      scale.value = 1;
-    }
-  });
 
   //初始化
   useEffect(() => {
@@ -67,7 +40,7 @@ export default function () {
 
       saveTime();
 
-      save();
+      saveHistory();
     });
 
     return () => {
@@ -81,7 +54,7 @@ export default function () {
 
       saveTime();
 
-      save();
+      saveHistory();
     };
   }, []);
 
@@ -97,7 +70,7 @@ export default function () {
 
       <Tip />
 
-      <Event pinchScale={pinchScale} />
+      <Event />
 
       <Animated.View className="wh-full" style={animatedStyles}>
         <Video />
