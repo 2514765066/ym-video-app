@@ -5,6 +5,7 @@ import { useSnapshot } from "valtio";
 import { progressStore } from "../../store/useProgress";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { controlStore } from "../../store/useControl";
+import { useMemo } from "react";
 
 export default function () {
   const { visible } = useSnapshot(controlStore);
@@ -13,21 +14,35 @@ export default function () {
 
   const padding = Math.max(left, right, 24);
 
-  if (!seekVisible && !visible) {
-    return null;
-  }
+  const { duration, currentTime } = useSnapshot(progressStore);
+
+  //当前播放进度
+  const progressWidth = useMemo(() => {
+    return (currentTime / duration) * 100 || 0;
+  }, [currentTime]);
 
   return (
     <View
-      className="w-full gap-3 absolute bottom-0 left-0 z-30"
+      className="w-full  absolute bottom-0 left-0 z-30"
       style={{
         paddingLeft: padding,
         paddingRight: padding,
       }}
     >
-      {!seekVisible && <Controls />}
+      {visible ? (
+        <View className="gap-3">
+          {!seekVisible && <Controls />}
 
-      <Progress />
+          <Progress />
+        </View>
+      ) : (
+        <View
+          className="h-0.5 bg-main rounded-full"
+          style={{
+            width: `${progressWidth}%`,
+          }}
+        ></View>
+      )}
     </View>
   );
 }
